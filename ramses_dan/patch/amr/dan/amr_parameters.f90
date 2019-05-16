@@ -105,6 +105,7 @@ module amr_parameters
   integer::foutput=1000000    ! Frequency of outputs
   integer::output_mode=0      ! Output mode (for hires runs)
   logical::gadget_output=.false. ! Output in gadget format
+  logical::output_now=.false. ! Write output next step
 
   ! Lightcone parameters
   real(dp)::thetay_cone=12.5
@@ -132,8 +133,8 @@ module amr_parameters
   real(dp)::g_star =1.6D0     ! Typical ISM polytropic index
   real(dp)::jeans_ncells=-1   ! Jeans polytropic EOS
   real(dp)::del_star=2.D2     ! Minimum overdensity to define ISM
-  real(dp)::eta_sn  =0.0D0     ! Supernova mass fraction
-  real(dp)::eta_sn3 =0.0D0     ! Supernova mass fraction for PopIII SN
+  real(dp)::eta_sn  =0.0D0    ! Supernova mass fraction
+  real(dp)::eta_sn3 =0.0D0    ! Supernova mass fraction for PopIII SN
   real(dp)::yield  =0.0D0     ! Supernova yield
   real(dp)::f_ek   =1.0D0     ! Supernovae kinetic energy fraction (only between 0 and 1)
   real(dp)::rbubble=0.0D0     ! Supernovae superbubble radius in pc
@@ -155,8 +156,6 @@ module amr_parameters
   real(dp)::kappa_IR=0d0      ! IR dust opacity
   real(dp)::ind_rsink=4.0d0   ! Number of cells defining the radius of the sphere where AGN feedback is active
   real(dp)::ir_eff=0.75       ! efficiency of the IR feedback (only when ir_feedback=.true.)
-  real(dp)::delta_tout=0,tend=0 !DWM 2019
-  real(dp)::delta_aout=0,aend=0 !DWM 2019
 
   logical ::self_shielding=.false.
   logical ::pressure_fix=.false.
@@ -181,6 +180,8 @@ module amr_parameters
   ! Output times
   real(dp),dimension(1:MAXOUT)::aout=1.1       ! Output expansion factors
   real(dp),dimension(1:MAXOUT)::tout=0.0       ! Output times
+  real(dp)::delta_tout=0,tend=0 !DWM 2019
+  real(dp)::delta_aout=0,aend=0 !DWM 2019
 
   ! Movie
   integer,parameter::NMOV=5

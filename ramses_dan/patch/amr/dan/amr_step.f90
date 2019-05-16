@@ -116,7 +116,7 @@ recursive subroutine amr_step(ilevel,icount)
   ! Output results to files
   !------------------------
   if(ilevel==levelmin)then
-     if(mod(nstep_coarse,foutput)==0.or.aexp>=aout(iout).or.t>=tout(iout))then
+     if(mod(nstep_coarse,foutput)==0.or.aexp>=aout(iout).or.t>=tout(iout).or.output_now.EQV..true.)then
         if(.not.ok_defrag)then
            call defrag
         endif
@@ -128,6 +128,10 @@ recursive subroutine amr_step(ilevel,icount)
 
         ! Dump lightcone
         if(lightcone) call output_cone()
+
+        if (output_now.EQV..true.) then
+           output_now=.false.
+        endif
 
      endif
 
@@ -242,6 +246,7 @@ recursive subroutine amr_step(ilevel,icount)
         end do
 #endif
         if(simple_boundary)call make_boundary_hydro(ilevel)
+
      end if
   end if
 
