@@ -10,7 +10,7 @@ NVAR = 9
 NENER = 0
 SOLVER = hydro
 # Rick Sarmento - Pathes to implement pristine fraction scalar, H2 (molecular cooling)
-PATCH = ../patch/hydro/dan:../patch/pm/dan:../patch/amr/dan
+PATCH = ../patch/dan_stir/hydro:../patch/dan_stir/amr:../patch/dan_stir/pm
 EXEC = ramses_mix
 #############################################################################
 GITBRANCH = $(shell git rev-parse --abbrev-ref HEAD)

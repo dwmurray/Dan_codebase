@@ -180,8 +180,8 @@ module amr_parameters
   ! Output times
   real(dp),dimension(1:MAXOUT)::aout=1.1       ! Output expansion factors
   real(dp),dimension(1:MAXOUT)::tout=0.0       ! Output times
-  real(dp)::delta_tout=0,tend=0 !DWM 2019
-  real(dp)::delta_aout=0,aend=0 !DWM 2019
+!  real(dp)::delta_tout=0,tend=0 !DWM 2019
+!  real(dp)::delta_aout=0,aend=0 !DWM 2019
 
   ! Movie
   integer,parameter::NMOV=5
