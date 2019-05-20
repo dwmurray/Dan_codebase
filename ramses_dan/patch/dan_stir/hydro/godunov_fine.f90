@@ -541,7 +541,8 @@ subroutine godfine1(ind_grid,ncache,ilevel)
   integer::ind
   ! R. Sarmento
   integer::orig_type
-
+  ! DWM 05/2019
+  integer::nvarskip
   oneontwotondim = 1.d0/dble(twotondim)
 
   ! Mesh spacing in that level
