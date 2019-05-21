@@ -23,7 +23,8 @@ subroutine read_params
   !--------------------------------------------------
   ! Namelist definitions
   !--------------------------------------------------
-  namelist/run_params/clumpfind,cosmo,pic,sink,lightcone,poisson,hydro,rt,verbose,debug &
+  ! DWM 05/2019 added stir
+  namelist/run_params/clumpfind,cosmo,pic,sink,stir,lightcone,poisson,hydro,rt,verbose,debug &
        & ,nrestart,ncontrol,nstepmax,nsubcycle,nremap,ordering &
        & ,bisec_tol,static,geom,overload,cost_weighting,aton
   namelist/output_params/noutput,foutput,fbackup,aout,tout,output_mode &
@@ -234,6 +235,8 @@ subroutine read_params
   call rt_read_hydro_params(nml_ok)
 #endif
   if (sink)call read_sink_params
+  ! DWM 05/2019
+  if (stir)call read_stir_params(nml_ok)
   if (clumpfind .or. sink)call read_clumpfind_params
   if (movie)call set_movie_vars
 
