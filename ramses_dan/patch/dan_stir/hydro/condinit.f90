@@ -24,6 +24,11 @@ subroutine condinit(x,u,dx,nn)
   !================================================================
   integer::ivar
   real(dp),dimension(1:nvector,1:nvar),save::q   ! Primitive variables
+  ! DWM 05/2019 Stirring
+  integer::i,j,id,iu,iv,iw,ip,iax,iay,iaz
+  real(dp)::lambda,k,rho1,p1,v1,b1,xx,yy,zz,theta,expz,v2,xp,yp,zp,expp,v3
+  real(dp),dimension(1:nvector,3)::acc
+  real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
 
   ! Call built-in initial condition generator
   call region_condinit(x,q,dx,nn)
@@ -31,6 +36,8 @@ subroutine condinit(x,u,dx,nn)
   ! Add here, if you wish, some user-defined initial conditions
   ! ........
   ! DWM 05/2019 Added in Stirring.
+  ! Conversion factor from user units to cgs units
+  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
   call stir_acc_field(x,acc)
   
   id=1; iu=2; iv=3; iw=4; ip=5; iax=6; iay=7; iaz=8;
