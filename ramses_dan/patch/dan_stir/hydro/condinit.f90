@@ -40,7 +40,7 @@ subroutine condinit(x,u,dx,nn)
   call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
   call stir_acc_field(x,acc)
   
-  id=1; iu=2; iv=3; iw=4; ip=5; iax=6; iay=7; iaz=8;
+  id=1; iu=2; iv=3; iw=4; ip=5; iax=10; iay=11; iaz=12; ! DWM 10, 11 ,12 b/c Rick mods
   rho1=d_region(1)
   v1=0d0
   p1=rho1*T2_star/(scale_v*scale_v)/gamma

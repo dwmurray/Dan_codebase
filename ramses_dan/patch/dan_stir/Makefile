@@ -6,7 +6,7 @@ NVECTOR = 500
 NDIM = 3
 NPRE = 8
 # Tracking metals, pristine fraction, turb vel, primordialz -> 9 vars
-NVAR = 9 
+NVAR = 12
 NENER = 0
 SOLVER = hydro
 # Rick Sarmento - Pathes to implement pristine fraction scalar, H2 (molecular cooling)
