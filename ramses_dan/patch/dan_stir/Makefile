@@ -5,7 +5,7 @@
 NVECTOR = 500
 NDIM = 3
 NPRE = 8
-# Tracking metals, pristine fraction, turb vel, primordialz -> 9 vars
+# Tracking metals, pristine fraction, turb vel, primordialz -> 9 vars # Stirring -> 12 vars
 NVAR = 12
 NENER = 0
 SOLVER = hydro
@@ -95,7 +95,7 @@ VPATH = $(PATCH):../$(SOLVER):../aton:../hydro:../pm:../poisson:../amr
 # All objects
 MODOBJ = amr_parameters.o amr_commons.o random.o pm_parameters.o pm_commons.o poisson_parameters.o \
          poisson_commons.o hydro_parameters.o hydro_commons.o cooling_module.o bisection.o sparse_mat.o \
-         clfind_commons.o gadgetreadfile.o write_makefile.o write_patch.o write_gitinfo.o
+         clfind_commons.o gadgetreadfile.o write_makefile.o write_gitinfo.o #write_patch.o write_gitinfo.o #
 
 # Rick Sarmento - note that pristine_update.o has been added. It only appears in patch/hydro/rick dir.
 AMROBJ = read_params.o init_amr.o init_time.o init_refine.o adaptive_loop.o amr_step.o update_time.o \
@@ -135,9 +135,9 @@ write_gitinfo.o: FORCE
 write_makefile.o: FORCE
 	../utils/scripts/cr_write_makefile.sh $(MAKEFILE_LIST)
 	$(F90) $(FFLAGS) -c write_makefile.f90 -o $@
-write_patch.o: FORCE
-	../utils/scripts/cr_write_patch.sh $(PATCH)
-	$(F90) $(FFLAGS) -c write_patch.f90 -o $@
+#write_patch.o: FORCE
+#	../utils/scripts/cr_write_patch.sh $(PATCH)
+#	$(F90) $(FFLAGS) -c write_patch.f90 -o $@
 %.o:%.f90
 	$(F90) $(FFLAGS) -c $^ -o $@
 FORCE:
