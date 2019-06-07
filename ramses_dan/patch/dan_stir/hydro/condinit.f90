@@ -36,6 +36,34 @@ subroutine condinit(x,u,dx,nn)
   ! Add here, if you wish, some user-defined initial conditions
   ! ........
 
+  ! DWM 05/2019 Added in Stirring.
+  ! Conversion factor from user units to cgs units
+  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
+  call stir_acc_field(x,acc)
+  
+  id=1; iu=2; iv=3; iw=4; ip=5; iax=10; iay=11; iaz=12; ! DWM 10, 11 ,12 b/c Rick mods
+  rho1=d_region(1)
+  v1=0d0
+  p1=rho1*T2_star/(scale_v*scale_v)/gamma
+  
+  theta=0.4
+  !write(*,*) T2_star, gamma
+  do i=1,nn
+     q(i,id)=rho1
+
+     q(i,iu)= 0d0
+     q(i,iv)= 0d0
+     q(i,iw)= 0d0
+
+     q(i,ip)=p1
+     
+     ! add the stir acceleration field
+     q(i,iax)=acc(i,1)
+     q(i,iay)=acc(i,2)
+     q(i,iaz)=acc(i,3)
+  end do
+
+
   ! Convert primitive to conservative variables
   ! density -> density
   u(1:nn,1)=q(1:nn,1)
@@ -68,7 +96,7 @@ subroutine condinit(x,u,dx,nn)
 #endif
 #if NVAR>NDIM+2+NENER
   ! passive scalars
-  do ivar=ndim+3+nener,nvar ! DWM I believe this is the spot
+  do ivar=ndim+3+nener,nvar-3 ! DWM I believe this is the spot
      ! Rick Sarmento - 18 Dec 2013
      ! Note that we are also tracking the pristine fraction
      ! as normalized by the density of the cell. We'll
@@ -78,33 +106,6 @@ subroutine condinit(x,u,dx,nn)
      u(1:nn,ivar)=q(1:nn,1)*q(1:nn,ivar)
   end do
 #endif
-
-  ! DWM 05/2019 Added in Stirring.
-  ! Conversion factor from user units to cgs units
-  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
-  call stir_acc_field(x,acc)
-  
-  id=1; iu=2; iv=3; iw=4; ip=5; iax=10; iay=11; iaz=12; ! DWM 10, 11 ,12 b/c Rick mods
-  rho1=d_region(1)
-  v1=0d0
-  p1=rho1*T2_star/(scale_v*scale_v)/gamma
-  
-  theta=0.4
-  !write(*,*) T2_star, gamma
-  do i=1,nn
-     q(i,id)=rho1
-
-     q(i,iu)= 0d0
-     q(i,iv)= 0d0
-     q(i,iw)= 0d0
-
-     q(i,ip)=p1
-     
-     ! add the stir acceleration field
-     q(i,iax)=acc(i,1)
-     q(i,iay)=acc(i,2)
-     q(i,iaz)=acc(i,3)
-  end do
 
 end subroutine condinit
 
