@@ -509,20 +509,20 @@ subroutine region_condinit(x,q,dx,nn)
 #endif
   q(1:nn,ndim+2)=smallr*smallc**2/gamma
 #if NVAR > NDIM + 2
-  do ivar=ndim+3,nvar
+  do ivar=ndim+3,nvar-3 !DWM -3 to remove stirring vars
      q(1:nn,ivar)=0.0d0
      ! Rick Sarmento - Handle the new pristine gas
      ! fraction scalar. This should be initialized to 
      ! 1. ... 
      if (ivar==iprist)then
-        print *,"init_flow_fine::region_condinit: iprist Init q(1:nn,iprist)=1.0"
+        if(verbose)print *,"init_flow_fine::region_condinit: iprist Init q(1:nn,iprist)=1.0"
         q(1:nn,ivar)=1.0d0 ! Want to set this to 1... 
      endif
      if (ivar==iturbvel)then
-        print *,"init_flow_fine::region_condinit: iturbvel Init q(1:nn,i)=0.0"
+        if(verbose)print *,"init_flow_fine::region_condinit: iturbvel Init q(1:nn,i)=0.0"
      endif
      if (ivar==iprimordz)then
-        print *,"init_flow_fine::region_condinit: iprimordz Init q(1:nn,i)=0.0"
+        if(verbose)print *,"init_flow_fine::region_condinit: iprimordz Init q(1:nn,i)=0.0"
      endif
   end do
 #endif
