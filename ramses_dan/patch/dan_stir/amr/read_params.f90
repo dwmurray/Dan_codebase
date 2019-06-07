@@ -88,7 +88,7 @@ subroutine read_params
 #endif
 
   ! Write information about git version
-  call write_gitinfo
+  !call write_gitinfo !@ DWM
 
   ! Read namelist filename from command line argument
   narg = iargc()

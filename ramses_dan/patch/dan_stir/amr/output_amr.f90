@@ -47,7 +47,7 @@ subroutine dump_all
         filename=TRIM(filedir)//'makefile.txt'
         call output_makefile(filename)
         filename=TRIM(filedir)//'patches.txt'
-        call output_patch(filename)
+        !call output_patch(filename) ! DWM
         if(cooling)then
            filename=TRIM(filedir)//'cooling_'//TRIM(nchar)//'.out'
            call output_cool(filename)
