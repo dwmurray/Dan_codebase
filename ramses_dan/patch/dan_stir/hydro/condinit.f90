@@ -46,7 +46,7 @@ subroutine condinit(x,u,dx,nn)
   v1=0d0
   p1=rho1*T2_star/(scale_v*scale_v)/gamma
   
-  theta=0.4
+  theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
   !write(*,*) T2_star, gamma
   if(verbose)write(*,*) q(1:nn,10),q(1:nn,11),q(1:nn,12) !DWM
   stop !DWM
@@ -98,7 +98,7 @@ subroutine condinit(x,u,dx,nn)
 #endif
 #if NVAR>NDIM+2+NENER
   ! passive scalars
-  do ivar=ndim+3+nener,nvar-3 ! DWM I believe this is the spot
+  do ivar=ndim+3+nener,nvar-3 !DWM 05/19 -3 to remove the stir vars
      if(verbose)write(*,*) q(1:nn,ivar)
      ! Rick Sarmento - 18 Dec 2013
      ! Note that we are also tracking the pristine fraction
