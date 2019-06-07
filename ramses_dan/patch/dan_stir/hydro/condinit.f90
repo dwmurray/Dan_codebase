@@ -48,6 +48,8 @@ subroutine condinit(x,u,dx,nn)
   
   theta=0.4
   !write(*,*) T2_star, gamma
+  if(verbose)write(*,*) q(1:nn,10),q(1:nn,11),q(1:nn,12) !DWM
+  stop !DWM
   do i=1,nn
      q(i,id)=rho1
 
@@ -97,6 +99,7 @@ subroutine condinit(x,u,dx,nn)
 #if NVAR>NDIM+2+NENER
   ! passive scalars
   do ivar=ndim+3+nener,nvar-3 ! DWM I believe this is the spot
+     if(verbose)write(*,*) q(1:nn,ivar)
      ! Rick Sarmento - 18 Dec 2013
      ! Note that we are also tracking the pristine fraction
      ! as normalized by the density of the cell. We'll
