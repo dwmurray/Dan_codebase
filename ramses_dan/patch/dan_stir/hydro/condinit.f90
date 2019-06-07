@@ -48,8 +48,7 @@ subroutine condinit(x,u,dx,nn)
   
   theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
   !write(*,*) T2_star, gamma
-  if(verbose)write(*,*) q(1:nn,10),q(1:nn,11),q(1:nn,12) !DWM
-  stop !DWM
+  if(verbose)write(*,*) rho1, v1, T2_star, gamma, p1 !DWM
   do i=1,nn
      q(i,id)=rho1
 
@@ -98,14 +97,16 @@ subroutine condinit(x,u,dx,nn)
 #endif
 #if NVAR>NDIM+2+NENER
   ! passive scalars
-  do ivar=ndim+3+nener,nvar-3 !DWM 05/19 -3 to remove the stir vars
-     if(verbose)write(*,*) q(1:nn,ivar)
+  do ivar=ndim+3+nener,nvar
      ! Rick Sarmento - 18 Dec 2013
      ! Note that we are also tracking the pristine fraction
      ! as normalized by the density of the cell. We'll
      ! have to account for this.
      ! region_condinit init's the q's to 0.0 except for 
      ! iprist, which gets 1.0
+     ! DWM 05/19 N.B. region_condinit (init_flow_fine.f90)
+     ! loops through nvar, so if you add additional vars beyond RS
+     ! modifications they will be set to 0.0
      u(1:nn,ivar)=q(1:nn,1)*q(1:nn,ivar)
   end do
 #endif
