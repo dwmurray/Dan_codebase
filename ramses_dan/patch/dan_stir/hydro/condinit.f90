@@ -50,6 +50,8 @@ subroutine condinit(x,u,dx,nn)
   !write(*,*) T2_star, gamma
   if(verbose)write(*,*) 'Printing Prior to stir q(1,i):'
   if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
+
+  if(verbose)write(*,*) 'rho1, v1, T2_star, gamma, p1:'
   if(verbose)write(*,*) rho1, v1, T2_star, gamma, p1 !DWM
   do i=1,nn
      q(i,id)=rho1

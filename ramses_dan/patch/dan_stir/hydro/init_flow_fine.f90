@@ -511,20 +511,20 @@ subroutine region_condinit(x,q,dx,nn)
 #if NVAR > NDIM + 2
   do ivar=ndim+3,nvar-3 !DWM -3 to remove stirring vars
      q(1:nn,ivar)=0.0d0
-     if(verbose)write(*,*) ivar, q(nn,ivar) !DWM tracking down ivars
+     if(verbose)write(*,*) 'setting ndim+3 - nvar:', ivar, q(nn,ivar) !DWM tracking down ivars
      ! Rick Sarmento - Handle the new pristine gas
      ! fraction scalar. This should be initialized to 
      ! 1. ... 
      if (ivar==iprist)then
         ! DWM made print statements only if verbose
-        if(verbose)print *,"init_flow_fine::region_condinit: iprist Init q(1:nn,iprist)=1.0", ivar
+        if(verbose)print *,"init_flow_fine::region_condinit: iprist Init q(1:nn,iprist)=1.0", ivar, iprist
         q(1:nn,ivar)=1.0d0 ! Want to set this to 1... 
      endif
      if (ivar==iturbvel)then
-        if(verbose)print *,"init_flow_fine::region_condinit: iturbvel Init q(1:nn,i)=0.0", ivar
+        if(verbose)print *,"init_flow_fine::region_condinit: iturbvel Init q(1:nn,i)=0.0", ivar, iturbvel
      endif
      if (ivar==iprimordz)then
-        if(verbose)print *,"init_flow_fine::region_condinit: iprimordz Init q(1:nn,i)=0.0", ivar
+        if(verbose)print *,"init_flow_fine::region_condinit: iprimordz Init q(1:nn,i)=0.0", ivar, iprimordz
      endif
   end do
 #endif
