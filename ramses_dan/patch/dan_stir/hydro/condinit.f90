@@ -26,7 +26,7 @@ subroutine condinit(x,u,dx,nn)
   real(dp),dimension(1:nvector,1:nvar),save::q   ! Primitive variables
   ! DWM 05/2019 Stirring
   integer::i,j,id,iu,iv,iw,ip,iax,iay,iaz
-  real(dp)::lambda,k,rho1,p1,v1,b1,xx,yy,zz,theta!,expz,v2,xp,yp,zp,expp,v3 !Starting to try to remove vars
+  real(dp)::lambda,k,rho1,p1,v1!,b1,xx,yy,zz,theta!,expz,v2,xp,yp,zp,expp,v3 !Starting to try to remove vars
   real(dp),dimension(1:nvector,3)::acc
   real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
 
@@ -41,12 +41,12 @@ subroutine condinit(x,u,dx,nn)
   call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
   call stir_acc_field(x,acc)
   
-  id=1; iu=2; iv=3; iw=4; ip=5; iax=10; iay=11; iaz=12; ! DWM 10, 11 ,12 b/c Rick mods
+  id=1; iu=2; iv=3; iw=4; ip=5; iax=10; iay=11; iaz=12; ! Hardcoded for 3D!! DWM iax-iaz = 10, 11 ,12 b/c Rick mods
   rho1=d_region(1)
   v1=0d0
   p1=rho1*T2_star/(scale_v*scale_v)/gamma
   
-  theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
+  !theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
   !write(*,*) T2_star, gamma
   if(verbose)write(*,*) 'Printing Prior to stir q(1,i):'
   if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
@@ -101,6 +101,9 @@ subroutine condinit(x,u,dx,nn)
 #endif
   if(verbose)write(*,*) 'Have converted for conserved values q(1,i):'
   if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
+
+  if(verbose)write(*,*) 'Have converted for conserved values U(1,i):'
+  if(verbose)write(*,*) u(1,1),u(1,2),u(1,3),u(1,4),u(1,5),u(1,6),u(1,7),u(1,8),u(1,9),u(1,10),u(1,11),u(1,12)
 
 #if NVAR>NDIM+2+NENER
   ! passive scalars
