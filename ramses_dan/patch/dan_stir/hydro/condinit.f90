@@ -26,7 +26,7 @@ subroutine condinit(x,u,dx,nn)
   real(dp),dimension(1:nvector,1:nvar),save::q   ! Primitive variables
   ! DWM 05/2019 Stirring
   integer::i,j,id,iu,iv,iw,ip,iax,iay,iaz
-  real(dp)::lambda,k,rho1,p1,v1,b1,xx,yy,zz,theta,expz,v2,xp,yp,zp,expp,v3
+  real(dp)::lambda,k,rho1,p1,v1,b1,xx,yy,zz,theta!,expz,v2,xp,yp,zp,expp,v3 !Starting to try to remove vars
   real(dp),dimension(1:nvector,3)::acc
   real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
 
@@ -48,6 +48,7 @@ subroutine condinit(x,u,dx,nn)
   
   theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
   !write(*,*) T2_star, gamma
+  if(verbose)write(*,*) 'Printing q(1,i)', q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12),
   if(verbose)write(*,*) rho1, v1, T2_star, gamma, p1 !DWM
   do i=1,nn
      q(i,id)=rho1
