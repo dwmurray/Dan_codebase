@@ -48,7 +48,8 @@ subroutine condinit(x,u,dx,nn)
   
   theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
   !write(*,*) T2_star, gamma
-  if(verbose)write(*,*) 'Printing q(1,i)', q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12),
+  if(verbose)write(*,*) 'Printing Prior to stir q(1,i):'
+  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
   if(verbose)write(*,*) rho1, v1, T2_star, gamma, p1 !DWM
   do i=1,nn
      q(i,id)=rho1
@@ -64,6 +65,8 @@ subroutine condinit(x,u,dx,nn)
      q(i,iay)=acc(i,2)
      q(i,iaz)=acc(i,3)
   end do
+  if(verbose)write(*,*) 'Printing after add stir q(1,i):'
+  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
 
 
   ! Convert primitive to conservative variables
@@ -96,6 +99,9 @@ subroutine condinit(x,u,dx,nn)
      u(1:nn,ndim+2)=u(1:nn,ndim+2)+u(1:nn,ndim+2+ivar)
   enddo
 #endif
+  if(verbose)write(*,*) 'Have converted for conserved values q(1,i):'
+  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
+
 #if NVAR>NDIM+2+NENER
   ! passive scalars
   do ivar=ndim+3+nener,nvar
@@ -111,6 +117,9 @@ subroutine condinit(x,u,dx,nn)
      u(1:nn,ivar)=q(1:nn,1)*q(1:nn,ivar)
   end do
 #endif
+
+  if(verbose)write(*,*) 'Have converted for conserved values for passives:'
+  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
 
 end subroutine condinit
 
