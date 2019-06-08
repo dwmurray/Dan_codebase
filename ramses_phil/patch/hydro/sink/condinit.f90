@@ -63,6 +63,9 @@ subroutine condinit(x,u,dx,nn)
      q(i,iay)=acc(i,2)
      q(i,iaz)=acc(i,3)
   end do
+  !DWM added verbose statements
+  if(verbose)write(*,*) 'Printing after add stir q(1,i):'
+  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8)
 
   ! Convert primitive to conservative variables
   ! density -> density
