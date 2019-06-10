@@ -119,11 +119,14 @@ subroutine condinit(x,u,dx,nn)
   end do
 #endif
 
-  write(*,*) 'Have converted for conserved values q(1,i):'
-  write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
-
+  write(*,*) 'Have converted for conserved values Q -> U:'
+  do ivar = 1,nn
+     write(*,*) q(ivar,1),q(ivar,2),q(ivar,3),q(ivar,4),q(ivar,5),q(ivar,6),q(ivar,7),q(ivar,8),q(ivar,9),q(ivar,10),q(ivar,11),q(ivar,12)
+  end do
   write(*,*) 'Have converted for conserved values U(1,i):'
-  write(*,*) u(1,1),u(1,2),u(1,3),u(1,4),u(1,5),u(1,6),u(1,7),u(1,8),u(1,9),u(1,10),u(1,11),u(1,12)
+  do ivar = 1,nn
+     write(*,*) u(ivar,1),u(ivar,2),u(ivar,3),u(ivar,4),u(ivar,5),u(ivar,6),u(ivar,7),u(ivar,8),u(ivar,9),u(ivar,10),u(ivar,11),u(ivar,12)
+  end do
 
 end subroutine condinit
 
