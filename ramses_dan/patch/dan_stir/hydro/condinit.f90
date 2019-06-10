@@ -119,11 +119,11 @@ subroutine condinit(x,u,dx,nn)
   end do
 #endif
 
-  if(verbose)write(*,*) 'Have converted for conserved values q(1,i):'
-  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
+  write(*,*) 'Have converted for conserved values q(1,i):'
+  write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
 
-  if(verbose)write(*,*) 'Have converted for conserved values U(1,i):'
-  if(verbose)write(*,*) u(1,1),u(1,2),u(1,3),u(1,4),u(1,5),u(1,6),u(1,7),u(1,8),u(1,9),u(1,10),u(1,11),u(1,12)
+  write(*,*) 'Have converted for conserved values U(1,i):'
+  write(*,*) u(1,1),u(1,2),u(1,3),u(1,4),u(1,5),u(1,6),u(1,7),u(1,8),u(1,9),u(1,10),u(1,11),u(1,12)
 
 end subroutine condinit
 
