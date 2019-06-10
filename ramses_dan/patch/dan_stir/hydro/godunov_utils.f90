@@ -112,6 +112,7 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   do k = 1,ncell
      dtcell = dx/uu(k,ndim+2)*(sqrt(one+two*courant_factor*uu(k,1))-one)/uu(k,1)
      dt = min(dt,dtcell)
+     write(*,*) dt ! DWM
   end do
 
 end subroutine cmpdt

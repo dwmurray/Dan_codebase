@@ -46,11 +46,11 @@ subroutine condinit(x,u,dx,nn)
   rho1=d_region(1)
   v1=0d0
   p1=rho1*T2_star/(scale_v*scale_v)/gamma
-  write (*,*),'rho1',rho1
-  write (*,*),'T2_star',T2_star
-  write (*,*),'scale_v',scale_v
-  write (*,*),'gamma',gamma
-  write (*,*), 'p1',p1
+!  write (*,*),'rho1',rho1
+!  write (*,*),'T2_star',T2_star
+!  write (*,*),'scale_v',scale_v
+!  write (*,*),'gamma',gamma
+!  write (*,*), 'p1',p1
   
   !theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
   !write(*,*) T2_star, gamma
@@ -124,35 +124,35 @@ subroutine condinit(x,u,dx,nn)
   end do
 #endif
 
-  do ivar = 1,nn
-     write(*,*) 'Q1',q(ivar,1),ivar
-     write(*,*) 'Q2',q(ivar,2),ivar
-     write(*,*) 'Q3',q(ivar,3),ivar
-     write(*,*) 'Q4',q(ivar,4),ivar
-     write(*,*) 'Q5',q(ivar,5),ivar
-     write(*,*) 'Q6',q(ivar,6),ivar
-     write(*,*) 'Q7',q(ivar,7),ivar
-     write(*,*) 'Q8',q(ivar,8),ivar
-     write(*,*) 'Q9',q(ivar,9),ivar
-     write(*,*) 'Q10',q(ivar,10),ivar
-     write(*,*) 'Q11',q(ivar,11),ivar
-     write(*,*) 'Q12',q(ivar,12),ivar
-  end do
-
-  do ivar = 1,nn
-     write(*,*) 'U1',u(ivar,1),ivar
-     write(*,*) 'U2',u(ivar,2),ivar
-     write(*,*) 'U3',u(ivar,3),ivar
-     write(*,*) 'U4',u(ivar,4),ivar
-     write(*,*) 'U5',u(ivar,5),ivar
-     write(*,*) 'U6',u(ivar,6),ivar
-     write(*,*) 'U7',u(ivar,7),ivar
-     write(*,*) 'U8',u(ivar,8),ivar
-     write(*,*) 'U9',u(ivar,9),ivar
-     write(*,*) 'U10',u(ivar,10),ivar
-     write(*,*) 'U11',u(ivar,11),ivar
-     write(*,*) 'U12',u(ivar,12),ivar
-  end do
+!  do ivar = 1,nn
+!     write(*,*) 'Q1',q(ivar,1),ivar
+!     write(*,*) 'Q2',q(ivar,2),ivar
+!     write(*,*) 'Q3',q(ivar,3),ivar
+!     write(*,*) 'Q4',q(ivar,4),ivar
+!     write(*,*) 'Q5',q(ivar,5),ivar
+!     write(*,*) 'Q6',q(ivar,6),ivar
+!     write(*,*) 'Q7',q(ivar,7),ivar
+!     write(*,*) 'Q8',q(ivar,8),ivar
+!     write(*,*) 'Q9',q(ivar,9),ivar
+!     write(*,*) 'Q10',q(ivar,10),ivar
+!     write(*,*) 'Q11',q(ivar,11),ivar
+!     write(*,*) 'Q12',q(ivar,12),ivar
+!  end do
+!
+!  do ivar = 1,nn
+!     write(*,*) 'U1',u(ivar,1),ivar
+!     write(*,*) 'U2',u(ivar,2),ivar
+!     write(*,*) 'U3',u(ivar,3),ivar
+!     write(*,*) 'U4',u(ivar,4),ivar
+!     write(*,*) 'U5',u(ivar,5),ivar
+!     write(*,*) 'U6',u(ivar,6),ivar
+!     write(*,*) 'U7',u(ivar,7),ivar
+!     write(*,*) 'U8',u(ivar,8),ivar
+!     write(*,*) 'U9',u(ivar,9),ivar
+!     write(*,*) 'U10',u(ivar,10),ivar
+!     write(*,*) 'U11',u(ivar,11),ivar
+!     write(*,*) 'U12',u(ivar,12),ivar
+!  end do
 
 end subroutine condinit
 
