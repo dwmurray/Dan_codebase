@@ -36,6 +36,42 @@ subroutine condinit(x,u,dx,nn)
   ! Add here, if you wish, some user-defined initial conditions
   ! ........
 
+
+  ! DWM 05/2019 Added in Stirring.
+  ! Conversion factor from user units to cgs units
+  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
+  call stir_acc_field(x,acc)
+  
+  id=1; iu=2; iv=3; iw=4; ip=5; iax=10; iay=11; iaz=12; ! Hardcoded for 3D!! DWM iax-iaz = 10, 11 ,12 b/c Rick mods
+  rho1=d_region(1)
+  v1=0d0
+  p1=rho1*T2_star/(scale_v*scale_v)/gamma
+  
+  !theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
+  !write(*,*) T2_star, gamma
+!  if(verbose)write(*,*) 'Printing Prior to stir q(1,i):'
+!  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
+
+!  if(verbose)write(*,*) 'rho1, v1, T2_star, gamma, p1:'
+!  if(verbose)write(*,*) rho1, v1, T2_star, gamma, p1 !DWM
+  do i=1,nn
+     q(i,id)=rho1
+
+     q(i,iu)= 0d0
+     q(i,iv)= 0d0
+     q(i,iw)= 0d0
+
+     q(i,ip)=p1
+     
+     ! add the stir acceleration field
+     q(i,iax)=acc(i,1)
+     q(i,iay)=acc(i,2)
+     q(i,iaz)=acc(i,3)
+  end do
+!  if(verbose)write(*,*) 'Printing after add stir q(1,i):'
+!  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
+
+
   ! Convert primitive to conservative variables
   ! density -> density
   u(1:nn,1)=q(1:nn,1)
@@ -66,11 +102,6 @@ subroutine condinit(x,u,dx,nn)
      u(1:nn,ndim+2)=u(1:nn,ndim+2)+u(1:nn,ndim+2+ivar)
   enddo
 #endif
-  if(verbose)write(*,*) 'Have converted for conserved values q(1,i):'
-  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
-
-  if(verbose)write(*,*) 'Have converted for conserved values U(1,i):'
-  if(verbose)write(*,*) u(1,1),u(1,2),u(1,3),u(1,4),u(1,5),u(1,6),u(1,7),u(1,8),u(1,9),u(1,10),u(1,11),u(1,12)
 
 #if NVAR>NDIM+2+NENER
   ! passive scalars
@@ -88,42 +119,11 @@ subroutine condinit(x,u,dx,nn)
   end do
 #endif
 
-  if(verbose)write(*,*) 'Have converted for conserved values for passives:'
+  if(verbose)write(*,*) 'Have converted for conserved values q(1,i):'
   if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
-
-  ! DWM 05/2019 Added in Stirring.
-  ! Conversion factor from user units to cgs units
-  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
-  call stir_acc_field(x,acc)
-  
-  id=1; iu=2; iv=3; iw=4; ip=5; iax=10; iay=11; iaz=12; ! Hardcoded for 3D!! DWM iax-iaz = 10, 11 ,12 b/c Rick mods
-  rho1=d_region(1)
-  v1=0d0
-  p1=rho1*T2_star/(scale_v*scale_v)/gamma
-  
-  !theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
-  !write(*,*) T2_star, gamma
-  if(verbose)write(*,*) 'Printing Prior to stir q(1,i):'
-  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
-
-  if(verbose)write(*,*) 'rho1, v1, T2_star, gamma, p1:'
-  if(verbose)write(*,*) rho1, v1, T2_star, gamma, p1 !DWM
-  do i=1,nn
-     q(i,id)=rho1
-
-     q(i,iu)= 0d0
-     q(i,iv)= 0d0
-     q(i,iw)= 0d0
-
-     q(i,ip)=p1
-     
-     ! add the stir acceleration field
-     q(i,iax)=acc(i,1)
-     q(i,iay)=acc(i,2)
-     q(i,iaz)=acc(i,3)
-  end do
-  if(verbose)write(*,*) 'Printing after add stir q(1,i):'
-  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
+!
+!  if(verbose)write(*,*) 'Have converted for conserved values U(1,i):'
+!  if(verbose)write(*,*) u(1,1),u(1,2),u(1,3),u(1,4),u(1,5),u(1,6),u(1,7),u(1,8),u(1,9),u(1,10),u(1,11),u(1,12)
 
 end subroutine condinit
 
