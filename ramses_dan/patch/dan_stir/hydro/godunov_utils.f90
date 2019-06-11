@@ -17,6 +17,8 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   
   smallp = smallc**2/gamma
 
+  ! DWM
+  write(*,*) 'uu(k,1) prior to Start', uu(k,1)
   ! Convert to primitive variables
   do k = 1,ncell
      uu(k,1)=max(uu(k,1),smallr)
@@ -112,7 +114,7 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
      write(*,*) 'uu(k,1)', uu(k,1)
      write(*,*) 'dx', dx
      write(*,*) 'uu(k, ndim+2) :', uu(k,ndim+2)
-     write(*,*) 'dx/uu(k,ndim+2)**2'
+     write(*,*) 'dx/uu(k,ndim+2)**2 :',dx/uu(k,ndim+2)**2
      uu(k,1)=MAX(uu(k,1),0.0001_dp)
   end do
 
