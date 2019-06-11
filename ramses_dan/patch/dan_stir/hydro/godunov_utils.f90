@@ -109,10 +109,15 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
 
   ! Compute maximum time step for each authorized cell
   dt = courant_factor*dx/smallc
+  write(*,*) 'courant_factor', courant_factor, 'smallc', smallc
+  write(*,*) 'dx: ', dx
+  write(*,*) 'dt: ', dt
   do k = 1,ncell
      dtcell = dx/uu(k,ndim+2)*(sqrt(one+two*courant_factor*uu(k,1))-one)/uu(k,1)
      dt = min(dt,dtcell)
-     write(*,*) dt ! DWM
+     write(*,*) 'uu(k, 5): P = ', uu(k,ndim+2), 'uu(k, 1): rho = ', uu(k,1)
+     write(*,*) 'dx = ', dx
+     write(*,*) 'dt for cell k:', dt, k ! DWM
   end do
 
 end subroutine cmpdt
