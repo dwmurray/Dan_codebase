@@ -95,6 +95,8 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
 
   ! Compute gravity strength ratio
   do k = 1, ncell
+     !DWM write statements
+     write(*,*) 'uu(k,1) prior to Zero', uu(k,1)
      uu(k,1)=zero
   end do
   do idim = 1,ndim
@@ -103,12 +105,19 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
      end do
   end do
   do k = 1, ncell
+     !DWM write statements
+     write(*,*) 'uu(k,1)', uu(k,1)
      uu(k,1)=uu(k,1)*dx/uu(k,ndim+2)**2
+     write(*,*) 'uu(k,1)', uu(k,1)
+     write(*,*) 'dx', dx
+     write(*,*) 'uu(k, ndim+2) :', uu(k,ndim+2)
+     write(*,*) '10^-4', 0.0001_dp
      uu(k,1)=MAX(uu(k,1),0.0001_dp)
   end do
 
   ! Compute maximum time step for each authorized cell
   dt = courant_factor*dx/smallc
+  ! DWM write statements tracking down my dt
   write(*,*) 'courant_factor', courant_factor, 'smallc', smallc
   write(*,*) 'dx: ', dx
   write(*,*) 'dt: ', dt
