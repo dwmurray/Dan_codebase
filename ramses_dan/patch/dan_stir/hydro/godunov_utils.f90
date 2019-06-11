@@ -17,10 +17,10 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   
   smallp = smallc**2/gamma
 
-  ! DWM
-  write(*,*) 'uu(k,1) prior to Start', uu(k,1)
   ! Convert to primitive variables
   do k = 1,ncell
+     ! DWM
+     write(*,*) 'uu(k,1) prior to Start', uu(k,1)
      uu(k,1)=max(uu(k,1),smallr)
   end do
   ! Velocity
