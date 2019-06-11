@@ -46,11 +46,12 @@ subroutine condinit(x,u,dx,nn)
   rho1=d_region(1)
   v1=0d0
   p1=rho1*T2_star/(scale_v*scale_v)/gamma
-!  write (*,*),'rho1',rho1
-!  write (*,*),'T2_star',T2_star
-!  write (*,*),'scale_v',scale_v
-!  write (*,*),'gamma',gamma
-!  write (*,*), 'p1',p1
+  write (*,*),'rho1',rho1
+  write (*,*),'T2_star',T2_star
+  write (*,*),'scale_v',scale_v
+  write (*,*), 'scale_t', scale_t
+  write (*,*),'gamma',gamma
+  write (*,*), 'Pressure p1',p1
   
   !theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
   !write(*,*) T2_star, gamma
