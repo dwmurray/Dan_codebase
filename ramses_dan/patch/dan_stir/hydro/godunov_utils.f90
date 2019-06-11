@@ -93,10 +93,11 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
      end do
   end do
 
+  !DWM write statements
+  write(*,*) 'uu(k,1) prior to Zero', uu(k,1)
+
   ! Compute gravity strength ratio
   do k = 1, ncell
-     !DWM write statements
-     write(*,*) 'uu(k,1) prior to Zero', uu(k,1)
      uu(k,1)=zero
   end do
   do idim = 1,ndim
@@ -104,14 +105,14 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
         uu(k,1)=uu(k,1)+abs(gg(k,idim))
      end do
   end do
+  !DWM write statements
+  write(*,*) 'uu(k,1)=zero + gg(k,idim) should be zero:', uu(k,1)
   do k = 1, ncell
-     !DWM write statements
-     write(*,*) 'uu(k,1)', uu(k,1)
      uu(k,1)=uu(k,1)*dx/uu(k,ndim+2)**2
      write(*,*) 'uu(k,1)', uu(k,1)
      write(*,*) 'dx', dx
      write(*,*) 'uu(k, ndim+2) :', uu(k,ndim+2)
-     write(*,*) '10^-4', 0.0001_dp
+     write(*,*) 'dx/uu(k,ndim+2)**2'
      uu(k,1)=MAX(uu(k,1),0.0001_dp)
   end do
 
@@ -120,11 +121,11 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   ! DWM write statements tracking down my dt
   write(*,*) 'courant_factor', courant_factor, 'smallc', smallc
   write(*,*) 'dx: ', dx
-  write(*,*) 'dt: ', dt
+  write(*,*) 'dt_large: ', dt
   do k = 1,ncell
      dtcell = dx/uu(k,ndim+2)*(sqrt(one+two*courant_factor*uu(k,1))-one)/uu(k,1)
      dt = min(dt,dtcell)
-     write(*,*) 'uu(k, 5): P = ', uu(k,ndim+2), 'uu(k, 1): rho = ', uu(k,1)
+     write(*,*) 'uu(k, 5): = ', uu(k,ndim+2), 'uu(k, 1): = ', uu(k,1)
      write(*,*) 'dx = ', dx
      write(*,*) 'dt for cell k:', dt, k ! DWM
   end do
