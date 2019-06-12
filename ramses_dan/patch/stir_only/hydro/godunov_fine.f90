@@ -241,6 +241,75 @@ end subroutine add_gravity_source_terms
 !###########################################################
 !###########################################################
 !###########################################################
+! DWM Stirring 06/2019
+subroutine add_stir_source_terms(ilevel)
+  use amr_commons
+  use hydro_commons
+  use stir_parameters
+  implicit none
+  integer::ilevel
+  !--------------------------------------------------------------------------
+  ! This routine adds to unew the stir source terms
+  ! with only half a time step. Only the momentum and the
+  ! total energy are modified in array unew.
+  !--------------------------------------------------------------------------
+  integer::i,ivar,ind,iskip,nx_loc,ind_cell
+  real(dp)::d,u,v,w,e_kin,e_prim,d_old,fact
+  real(dp)::ax,ay,az
+  integer::iax,iay,iaz
+
+  if(numbtot(1,ilevel)==0)return
+  if(verbose)write(*,111)ilevel
+
+  ! Add stirsource term at time t with half time step
+  do ind=1,twotondim
+     iskip=ncoarse+(ind-1)*ngridmax
+     do i=1,active(ilevel)%ngrid
+        ind_cell=active(ilevel)%igrid(i)+iskip
+        d=max(unew(ind_cell,1),smallr)
+        u=0.0; v=0.0; w=0.0
+        ax=0.0; ay=0.0; az=0.0
+        iax=nvar-stir_nvar+1; iay=iax+1; iaz=iay+1
+        if(ndim>0) then
+           u=unew(ind_cell,2)/d
+           ax=unew(ind_cell,iax)/d
+        end if
+        if(ndim>1) then
+           v=unew(ind_cell,3)/d
+           ay=unew(ind_cell,iay)/d
+        end if
+        if(ndim>2) then
+           w=unew(ind_cell,4)/d
+           az=unew(ind_cell,iaz)/d
+        end if
+        e_kin=0.5*d*(u**2+v**2+w**2)
+        e_prim=unew(ind_cell,ndim+2)-e_kin
+        d_old=max(uold(ind_cell,1),smallr)
+        fact=d_old/d*0.5*dtnew(ilevel)
+        if(ndim>0)then
+           u=u+ax*fact
+           unew(ind_cell,2)=d*u
+        endif
+        if(ndim>1)then
+           v=v+ay*fact
+           unew(ind_cell,3)=d*v
+        end if
+        if(ndim>2)then
+           w=w+az*fact
+           unew(ind_cell,4)=d*w
+        endif
+        e_kin=0.5*d*(u**2+v**2+w**2)
+        unew(ind_cell,ndim+2)=e_prim+e_kin
+     end do
+  end do
+
+111 format('   Entering add_gravity_source_terms for level ',i2)
+
+end subroutine add_stir_source_terms
+!###########################################################
+!###########################################################
+!###########################################################
+!###########################################################
 subroutine add_pdv_source_terms(ilevel)
   use amr_commons
   use hydro_commons
