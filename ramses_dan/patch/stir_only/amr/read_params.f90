@@ -22,8 +22,7 @@ subroutine read_params
   !--------------------------------------------------
   ! Namelist definitions
   !--------------------------------------------------
-  ! DWM added stir
-  namelist/run_params/clumpfind,cosmo,pic,sink,stir,lightcone,poisson,hydro,rt,verbose,debug &
+  namelist/run_params/clumpfind,cosmo,pic,sink,lightcone,poisson,hydro,rt,verbose,debug &
        & ,nrestart,ncontrol,nstepmax,nsubcycle,nremap,ordering &
        & ,bisec_tol,static,geom,overload,cost_weighting,aton
   namelist/output_params/noutput,foutput,fbackup,aout,tout,output_mode &
@@ -84,7 +83,7 @@ subroutine read_params
 #endif
 
   ! Write information about git version
-  call write_gitinfo
+  !call write_gitinfo !DWM removed gitinfo long compile
 
   ! Read namelist filename from command line argument
   narg = iargc()
@@ -219,7 +218,6 @@ subroutine read_params
   call rt_read_hydro_params(nml_ok)
 #endif
   if (sink)call read_sink_params
-  if (stir)call read_stir_params ! DWM Stirring 06/2019
   if (clumpfind .or. sink)call read_clumpfind_params
 
 
