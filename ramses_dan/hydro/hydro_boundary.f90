@@ -201,9 +201,9 @@ subroutine make_boundary_hydro(ilevel)
                  do i=1,ngrid
                     uold(ind_cell(i),ivar)=uu(i,ivar)
                     ! R. Sarmento - DEBUG ONLY REMOVE
-                    if ((ivar == iprist).AND.(uold(ind_cell(i),imetal) > 0d0) ) then ! when ivar == iprist we've updated density thru Z
-                       print *,"hydro_bound: scatter Z/(1-P) ",uold(ind_cell(i),imetal)/(uold(ind_cell(i),1)-uold(ind_cell(i),iprist))
-                    endif
+!                    if ((ivar == iprist).AND.(uold(ind_cell(i),imetal) > 0d0) ) then ! when ivar == iprist we've updated density thru Z
+!                       print *,"hydro_bound: scatter Z/(1-P) ",uold(ind_cell(i),imetal)/(uold(ind_cell(i),1)-uold(ind_cell(i),iprist))
+!                    endif
                  end do
               end do
                  
