@@ -805,7 +805,7 @@ subroutine make_grid_fine(ind_grid,ind_cell,ind,ilevel,nn,ibound,boundary_region
                  do i=1,nn
                     uold(iskip+ind_grid_son(i),ivar)=u2(i,j,ivar)
                     ! R. Sarmento DEBUG
-                    if ((ivar == iprist) .AND. (u2(i,j,ivar)/u2(i,j,1) > 1.01d0)) print *,"refine_utils, post_interpol iprist ",u2(i,j,ivar)/u2(i,j,1)
+!                    if ((ivar == iprist) .AND. (u2(i,j,ivar)/u2(i,j,1) > 1.01d0)) print *,"refine_utils, post_interpol iprist ",u2(i,j,ivar)/u2(i,j,1)
                  end do
 #ifdef SOLVERmhd
               end do
