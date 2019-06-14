@@ -60,7 +60,11 @@ DEFINES = -DNVECTOR=$(NVECTOR) -DNDIM=$(NDIM) -DNPRE=$(NPRE) -DNENER=$(NENER) -D
 # --- MPI, ifort syntax ------------------------------
 F90 = mpif90
 #FFLAGS = -cpp -fast -axCORE-AVX2 -xSSE4.2 $(DEFINES) -DNOSYSTEM
-FFLAGS = -cpp 
+#FFLAGS = -cpp 
+# This should build a fat binary that works on KNL and SKX
+# -axCORE-AVX512,MIC-AVX512
+FFLAGS = -O3 -xCORE-AVX2 -axCORE-AVX512,MIC-AVX512 -cpp $(DEFINES) -DNOSYSTEM
+# -mkl # don't think we need this wil intel compilers
 
 # --- MPI, ifort syntax, additional checks -----------
 ##F90 = mpif90
