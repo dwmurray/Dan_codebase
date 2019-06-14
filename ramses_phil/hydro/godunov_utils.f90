@@ -18,11 +18,9 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   smallp = smallc**2/gamma
 
   ! Convert to primitive variables
-  write(*,*) 'Inside subroutine cmpdt, uu(ncell/2,1): ', uu(ncell/2.,1)
   do k = 1,ncell
      uu(k,1)=max(uu(k,1),smallr)
   end do
-  write(*,*) 'subroutine cmpdt max between uu and smallr, uu(ncell/2,1): ', uu(ncell/2.,1)
   ! Velocity
   do idim = 1,ndim
      do k = 1, ncell
@@ -96,7 +94,6 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   end do
 
   ! Compute gravity strength ratio
-  write(*,*) 'about to zero uu for gravity-subroutine cmpdt, uu(ncell/2,1): ', uu(ncell/2.,1)
   do k = 1, ncell
      uu(k,1)=zero
   end do
