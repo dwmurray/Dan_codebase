@@ -436,7 +436,7 @@ subroutine init_flow_fine(ilevel)
            do ivar=1,nvar
               do i=1,ngrid
                  uold(ind_cell(i),ivar)=uu(i,ivar)
-                 if (ivar=1) write(*,*) 'assigning uold from uu', uold(ind_cell(i),ivar)
+                 if (ivar.EQ.1) write(*,*) 'assigning uold from uu', uold(ind_cell(i),ivar)
               end do
            end do
         end do
