@@ -481,9 +481,8 @@ subroutine region_condinit(x,q,dx,nn)
 #endif
 
   ! Loop over initial conditions regions
-  write(*,*) 'nregion: ', nregion
+  write(*,*) 'nregion: ', nregion, 'region type: ', region_type(1), 'exp_region: ', exp_region(1) ! DWM
   do k=1,nregion
-     
      ! For "square" regions only:
      if(region_type(k) .eq. 'square')then
         ! Exponent of choosen norm
@@ -506,6 +505,7 @@ subroutine region_condinit(x,q,dx,nn)
            end if
            ! If cell lies within region,
            ! REPLACE primitive variables by region values
+           write(*,*) 'r :', r
            if(r<1.0)then
               q(i,1)=d_region(k)
               q(i,2)=u_region(k)
