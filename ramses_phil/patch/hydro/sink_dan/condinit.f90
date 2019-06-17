@@ -42,7 +42,9 @@ subroutine condinit(x,u,dx,nn)
   ! ........
   call stir_acc_field(x,acc)
 
-  write(*,*) 'Ramses Q init, now about to mod via Phil"s stirring.', q(nn/2.,1) !DWM
+!  write(*,*) 'Ramses Q init, now about to mod via Phil"s stirring.', q(nn/2.,1) !DWM
+  !The density here will always come in as the smallr
+  !
   
   id=1; iu=2; iv=3; iw=4; ip=5; iax=6; iay=7; iaz=8;
   rho1=d_region(1)
