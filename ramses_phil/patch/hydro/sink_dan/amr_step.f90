@@ -251,7 +251,7 @@ recursive subroutine amr_step(ilevel,icount)
   if(ilevel>levelmin)then
      dtnew(ilevel)=MIN(dtnew(ilevel-1)/real(nsubcycle(ilevel-1)),dtnew(ilevel))
   end if
-
+  !DWM
   ! Set unew equal to uold
   if(hydro)call set_unew(ilevel)
 

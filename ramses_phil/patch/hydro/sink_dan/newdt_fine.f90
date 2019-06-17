@@ -38,6 +38,7 @@ subroutine newdt_fine(ilevel)
   dtold(ilevel)=dtnew(ilevel)
 
   ! Maximum time step
+  write(*,*) 'boxlen', boxlen, 'smallc', smallc
   dtnew(ilevel)=boxlen/smallc
   if(poisson.and.gravity_type<=0)then
      fourpi=4.0d0*ACOS(-1.0d0)
@@ -117,6 +118,7 @@ subroutine newdt_fine(ilevel)
      ekin_all=ekin_loc
 #endif
      ekin_tot=ekin_tot+ekin_all
+     write(*,*) 'dtnew(ilevel)', dtnew(ilevel), 'dt_all', dt_all !DWM
      dtnew(ilevel)=MIN(dtnew(ilevel),dt_all)
 
 
