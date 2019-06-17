@@ -499,7 +499,8 @@ subroutine region_condinit(x,q,dx,nn)
            zn=2.0d0*abs(x(i,3)-z_center(k))/length_z(k)
 #endif
            ! Compute cell "radius" relative to region center
-           write(*,*) 'xn', xn, 'yn', yn, 'zn', zn, 'r:', (xn**en+yn**en+zn**en)**(1.0/en) !DWM
+           !write(*,*) 'xn', xn, 'yn', yn, 'zn', zn, 'r:', (xn**en+yn**en+zn**en)**(1.0/en) !DWM
+           ! r is typically much larger than 1. the normalized units are somehow incorrect. !DWM
            if(exp_region(k)<10)then
               r=(xn**en+yn**en+zn**en)**(1.0/en)
            else
@@ -507,7 +508,7 @@ subroutine region_condinit(x,q,dx,nn)
            end if
            ! If cell lies within region,
            ! REPLACE primitive variables by region values
-           write(*,*) 'Chosen r :', r
+           !write(*,*) 'Chosen r :', r !DWM
            if(r<1.0)then
               q(i,1)=d_region(k)
               q(i,2)=u_region(k)
@@ -529,7 +530,7 @@ subroutine region_condinit(x,q,dx,nn)
               end do
 #endif
            end if
-           write(*,*) 'q after r<1 : q(i,1): ', q(i,1)
+           !write(*,*) 'q after r<1 : q(i,1): ', q(i,1)! DWM
         end do
      end if
      
