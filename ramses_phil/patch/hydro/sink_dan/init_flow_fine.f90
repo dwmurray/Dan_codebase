@@ -482,11 +482,13 @@ subroutine region_condinit(x,q,dx,nn)
 
   ! Loop over initial conditions regions
   write(*,*) 'nregion: ', nregion, 'region type: ', region_type(1), 'exp_region: ', exp_region(1) ! DWM
+  write(*,*) 'x_center(1)', x_center(1), 'length of x :', length_x(1)
   do k=1,nregion
      ! For "square" regions only:
      if(region_type(k) .eq. 'square')then
         ! Exponent of choosen norm
         en=exp_region(k)
+        write(*,*) 'Have entered Square: region type: ', region_type(1), 'exp_region: ', en ! DWM
         do i=1,nn
            ! Compute position in normalized coordinates
            xn=0.0d0; yn=0.0d0; zn=0.0d0
@@ -498,6 +500,7 @@ subroutine region_condinit(x,q,dx,nn)
            zn=2.0d0*abs(x(i,3)-z_center(k))/length_z(k)
 #endif
            ! Compute cell "radius" relative to region center
+           write(*,*) 'xn', xn, 'yn', yn, 'zn', zn, 'r:', (xn**en+yn**en+zn**en)**(1.0/en),
            if(exp_region(k)<10)then
               r=(xn**en+yn**en+zn**en)**(1.0/en)
            else
@@ -505,7 +508,7 @@ subroutine region_condinit(x,q,dx,nn)
            end if
            ! If cell lies within region,
            ! REPLACE primitive variables by region values
-           write(*,*) 'r :', r
+           write(*,*) 'Chosen r :', r
            if(r<1.0)then
               q(i,1)=d_region(k)
               q(i,2)=u_region(k)
