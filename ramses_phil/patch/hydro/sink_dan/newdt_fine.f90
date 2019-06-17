@@ -53,7 +53,7 @@ subroutine newdt_fine(ilevel)
   if(cosmo)then
      dtnew(ilevel)=MIN(dtnew(ilevel),0.1/hexp)
   end if
-
+  write(*,*) 'newdt_fine choice of dtnew: ', dtnew !DWM
 #ifdef ATON
   ! Maximum time step for ATON
   if(aton)then
