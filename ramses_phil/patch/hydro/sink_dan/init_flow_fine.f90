@@ -500,7 +500,7 @@ subroutine region_condinit(x,q,dx,nn)
            zn=2.0d0*abs(x(i,3)-z_center(k))/length_z(k)
 #endif
            ! Compute cell "radius" relative to region center
-           write(*,*) 'xn', xn, 'yn', yn, 'zn', zn, 'r:', (xn**en+yn**en+zn**en)**(1.0/en),
+           write(*,*) 'xn', xn, 'yn', yn, 'zn', zn, 'r:', (xn**en+yn**en+zn**en)**(1.0/en) !DWM
            if(exp_region(k)<10)then
               r=(xn**en+yn**en+zn**en)**(1.0/en)
            else
