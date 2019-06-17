@@ -488,7 +488,6 @@ subroutine region_condinit(x,q,dx,nn)
      if(region_type(k) .eq. 'square')then
         ! Exponent of choosen norm
         en=exp_region(k)
-        write(*,*) 'Have entered Square: region type: ', region_type(1), 'exp_region: ', en ! DWM
         do i=1,nn
            ! Compute position in normalized coordinates
            xn=0.0d0; yn=0.0d0; zn=0.0d0
@@ -530,6 +529,7 @@ subroutine region_condinit(x,q,dx,nn)
               end do
 #endif
            end if
+           write(*,*) 'q after r<1 : q(i,1): ', q(i,1)
         end do
      end if
      
