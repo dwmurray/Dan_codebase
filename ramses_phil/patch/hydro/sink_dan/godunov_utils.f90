@@ -18,11 +18,9 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   smallp = smallc**2/gamma
 
   ! Convert to primitive variables
-  write(*,*) 'Inside subroutine cmpdt, uu(ncell/2,1): ', uu(ncell/2.,1)
   do k = 1,ncell
      uu(k,1)=max(uu(k,1),smallr)
   end do
-  write(*,*) 'subroutine cmpdt max between uu and smallr, uu(ncell/2,1): ', uu(ncell/2.,1)
   ! Velocity
   do idim = 1,ndim
      do k = 1, ncell
@@ -96,7 +94,6 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   end do
 
   ! Compute gravity strength ratio
-  write(*,*) 'about to zero uu for gravity-subroutine cmpdt, uu(ncell/2,1): ', uu(ncell/2.,1)
   do k = 1, ncell
      uu(k,1)=zero
   end do
@@ -109,14 +106,13 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
      uu(k,1)=uu(k,1)*dx/uu(k,ndim+2)**2
      uu(k,1)=MAX(uu(k,1),0.0001_dp)
   end do
-  write(*,*) 'Have calculated new uu(k,1)-subroutine cmpdt, uu(ncell/2,1): ', uu(ncell/2.,1)
   ! Compute maximum time step for each authorized cell
   dt = courant_factor*dx/smallc
   do k = 1,ncell
      dtcell = dx/uu(k,ndim+2)*(sqrt(one+two*courant_factor*uu(k,1))-one)/uu(k,1)
      dt = min(dt,dtcell)
   end do
-  write(*,*) 'Printing dt for good measure-subroutine cmpdt dt: ', dt
+  write(*,*) 'Printing dt for good measure-subroutine cmpdt dt: ', dt !DWM
 end subroutine cmpdt
 !###########################################################
 !###########################################################
