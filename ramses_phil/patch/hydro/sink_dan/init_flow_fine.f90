@@ -481,8 +481,8 @@ subroutine region_condinit(x,q,dx,nn)
 #endif
 
   ! Loop over initial conditions regions
-  write(*,*) 'nregion: ', nregion, 'region type: ', region_type(1), 'exp_region: ', exp_region(1) ! DWM
-  write(*,*) 'x_center(1)', x_center(1), 'length of x :', length_x(1)
+!  write(*,*) 'nregion: ', nregion, 'region type: ', region_type(1), 'exp_region: ', exp_region(1) ! DWM
+!  write(*,*) 'x_center(1)', x_center(1), 'length of x :', length_x(1)
   do k=1,nregion
      ! For "square" regions only:
      if(region_type(k) .eq. 'square')then
