@@ -109,14 +109,14 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
      uu(k,1)=uu(k,1)*dx/uu(k,ndim+2)**2
      uu(k,1)=MAX(uu(k,1),0.0001_dp)
   end do
-
+  write(*,*) 'Have calculated new uu(k,1)-subroutine cmpdt, uu(ncell/2,1): ', uu(ncell/2.,1)
   ! Compute maximum time step for each authorized cell
   dt = courant_factor*dx/smallc
   do k = 1,ncell
      dtcell = dx/uu(k,ndim+2)*(sqrt(one+two*courant_factor*uu(k,1))-one)/uu(k,1)
      dt = min(dt,dtcell)
   end do
-
+  write(*,*) 'Printing dt for good measure-subroutine cmpdt dt: ', dt
 end subroutine cmpdt
 !###########################################################
 !###########################################################

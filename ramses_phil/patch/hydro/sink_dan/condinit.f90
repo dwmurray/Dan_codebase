@@ -42,8 +42,8 @@ subroutine condinit(x,u,dx,nn)
   ! ........
   call stir_acc_field(x,acc)
 
-  write(*,*) 'modifications to q via Phil"s stirring.'
-  write(*,*) q(nn/2.,1) !DWM
+  write(*,*) 'Ramses Q init, now about to mod via Phil"s stirring.', q(nn/2.,1) !DWM
+  
   id=1; iu=2; iv=3; iw=4; ip=5; iax=6; iay=7; iaz=8;
   rho1=d_region(1)
   v1=0d0
