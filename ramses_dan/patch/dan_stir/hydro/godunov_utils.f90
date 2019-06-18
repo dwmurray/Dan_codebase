@@ -20,7 +20,7 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   ! Convert to primitive variables
   do k = 1,ncell
      ! DWM
-     write(*,*) 'uu(k,1) prior to Start', uu(k,1)
+     !write(*,*) 'uu(k,1) prior to Start', uu(k,1)
      uu(k,1)=max(uu(k,1),smallr)
   end do
   ! Velocity
@@ -96,7 +96,7 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   end do
 
   !DWM write statements
-  write(*,*) 'uu(k,1) prior to Zero', uu(k,1)
+!  write(*,*) 'uu(k,1) prior to Zero', uu(k,1)
 
   ! Compute gravity strength ratio
   do k = 1, ncell
@@ -129,7 +129,7 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
      dt = min(dt,dtcell)
      write(*,*) 'uu(k, 5): = ', uu(k,ndim+2), 'uu(k, 1): = ', uu(k,1)
 !     write(*,*) 'dx = ', dx
-!     write(*,*) 'dt for cell k:', dt, k ! DWM
+     write(*,*) 'dt for cell k:', dt, k ! DWM
   end do
 
 end subroutine cmpdt

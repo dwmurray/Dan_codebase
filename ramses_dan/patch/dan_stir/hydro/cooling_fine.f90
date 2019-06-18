@@ -390,6 +390,16 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
         end do
      endif
 #endif
+     ! DWM inserted by myself, hardcode test. should add flag for stir
+     ! Compute isothermal temperature
+     do i=1,nleaf
+        T2min(i) = T2_star/(scale_v*scale_v)
+     end do
+
+     ! Compute total energy from polytrope
+     do i=1,nleaf
+        uold(ind_leaf(i),neul) = T2min(i)*rho(i)/(gamma-1.0) + ekin(i)
+     end do
 
   end do
   ! End loop over cells
