@@ -408,7 +408,7 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
      
      ! Compute pressure
      do i=1,nleaf
-        T2(i)=e_dan(ind_leaf(i),5)
+        T2(i)=e_dan(i,5)
      end do
      do i=1,nleaf
         ekin(i)=0.0d0
