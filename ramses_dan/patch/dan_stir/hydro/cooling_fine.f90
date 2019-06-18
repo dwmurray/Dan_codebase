@@ -408,7 +408,7 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
      
      ! Compute pressure
      do i=1,nleaf
-        T2(i)=eold(i,5)
+        T2(i)=eold(i)
      end do
      do i=1,nleaf
         ekin(i)=0.0d0
