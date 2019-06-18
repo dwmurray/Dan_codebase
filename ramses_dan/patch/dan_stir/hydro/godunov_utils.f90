@@ -123,13 +123,13 @@ subroutine cmpdt(uu,gg,dx,dt,ncell)
   ! DWM write statements tracking down my dt
 !  write(*,*) 'courant_factor', courant_factor, 'smallc', smallc
 !  write(*,*) 'dx: ', dx
-  write(*,*) 'dt_large: ', dt
+!  write(*,*) 'dt_large: ', dt
   do k = 1,ncell
      dtcell = dx/uu(k,ndim+2)*(sqrt(one+two*courant_factor*uu(k,1))-one)/uu(k,1)
      dt = min(dt,dtcell)
-     write(*,*) 'uu(k, 5): = ', uu(k,ndim+2), 'uu(k, 1): = ', uu(k,1)
+!     write(*,*) 'uu(k, 5): = ', uu(k,ndim+2), 'uu(k, 1): = ', uu(k,1)
 !     write(*,*) 'dx = ', dx
-     write(*,*) 'dt for cell k:', dt, k ! DWM
+!     write(*,*) 'dt for cell k:', dt, k ! DWM
   end do
 
 end subroutine cmpdt
