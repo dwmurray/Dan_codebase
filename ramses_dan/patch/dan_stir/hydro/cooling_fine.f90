@@ -432,6 +432,8 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
 !End do DWM
   end do
   ! End loop over cells
+  dtcool = 3.15d12/scale_t
+  dtnew(ilevel) = min(dtnew(ilevel), dtcool)
 
 end subroutine coolfine1
 
