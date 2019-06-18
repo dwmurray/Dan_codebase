@@ -76,7 +76,7 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
   integer,dimension(1:nvector),save::ind_cell,ind_leaf
   real(kind=8),dimension(1:nvector),save::nH,T2,delta_T2,ekk,err
   !DWM next line
-  real(kind=8),dimension(1:nvector)::rho,ekin !added for stirring
+  real(kind=8),dimension(1:nvector)::rho,ekin,e_dan !added for stirring
 #ifdef RT
   real(dp)::scale_Np,scale_Fp
   logical,dimension(1:nvector),save::cooling_on=.true.
@@ -140,6 +140,10 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
         nH(i)=MAX(uold(ind_leaf(i),1),smallr)
      end do
      
+     !DWM !storing for later use the orig Presssure. Phil's hack
+     do i=1,nleaf
+        e_dan(i)=uold(ind_leaf(i),ndim+2)
+     end do
      ! Compute metallicity in solar units
      ! R. Sarmento - code units are mass fraction * mass density
      if(metal)then
@@ -404,7 +408,7 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
      
      ! Compute pressure
      do i=1,nleaf
-        T2(i)=uold(ind_leaf(i),5)
+        T2(i)=e_dan(ind_leaf(i),5)
      end do
      do i=1,nleaf
         ekin(i)=0.0d0
