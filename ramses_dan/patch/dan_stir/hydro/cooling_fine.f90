@@ -75,6 +75,8 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
   real(dp)::polytropic_constant,Fpnew,Npnew
   integer,dimension(1:nvector),save::ind_cell,ind_leaf
   real(kind=8),dimension(1:nvector),save::nH,T2,delta_T2,ekk,err
+  !DWM next line
+  real(kind=8),dimension(1:nvector)::rho,ekin !added for stirring
 #ifdef RT
   real(dp)::scale_Np,scale_Fp
   logical,dimension(1:nvector),save::cooling_on=.true.
@@ -391,6 +393,33 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
      endif
 #endif
      ! DWM inserted by myself, hardcode test. should add flag for stir
+
+     ! Compute rho
+     do i=1,nleaf
+        rho(i)=MAX(uold(ind_leaf(i),1),smallr)
+     end do
+     
+     ! Compute pressure
+     do i=1,nleaf
+        T2(i)=uold(ind_leaf(i),neul)
+     end do
+     do i=1,nleaf
+        ekin(i)=0.0d0
+     end do
+     do idim=1,3
+        do i=1,nleaf
+           ekin(i)=ekin(i)+0.5d0*uold(ind_leaf(i),idim+1)**2/rho(i)
+        end do
+     end do
+     do i=1,nleaf
+        T2(i)=(gamma-1.0)*(T2(i)-ekin(i))
+     end do
+
+     ! Compute T2=T/mu
+     do i=1,nleaf
+        T2(i)=T2(i)/rho(i)
+     end do
+
      ! Compute isothermal temperature
      do i=1,nleaf
         T2min(i) = T2_star/(scale_v*scale_v)
@@ -398,9 +427,9 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
 
      ! Compute total energy from polytrope
      do i=1,nleaf
-        uold(ind_leaf(i),5) = T2min(i)*rho(i)/(gamma-1.0) + ekin(i)
+        uold(ind_leaf(i),neul) = T2min(i)*rho(i)/(gamma-1.0) + ekin(i)
      end do
-
+!End do DWM
   end do
   ! End loop over cells
 
