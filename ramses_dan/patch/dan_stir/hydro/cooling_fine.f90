@@ -398,7 +398,7 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
 
      ! Compute total energy from polytrope
      do i=1,nleaf
-        uold(ind_leaf(i),neul) = T2min(i)*rho(i)/(gamma-1.0) + ekin(i)
+        uold(ind_leaf(i),5) = T2min(i)*rho(i)/(gamma-1.0) + ekin(i)
      end do
 
   end do
