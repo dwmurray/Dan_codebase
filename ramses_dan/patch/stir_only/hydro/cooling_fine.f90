@@ -85,6 +85,8 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
   real(kind=8),dimension(1:nvector),save::T2min,Zsolar,boost
   real(dp),dimension(1:3)::skip_loc
   real(kind=8)::dx,dx_loc,scale,vol_loc
+  !DWM
+  real(kind=8),dimension(1:nvector),save::rho,ekin
 
   ! Mesh spacing in that level
   dx=0.5D0**ilevel
