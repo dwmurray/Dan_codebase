@@ -166,7 +166,7 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
      do idim=1,ndim ! uold(,2-4) are velocities ... 
         do i=1,nleaf
            ekk(i)=ekk(i)+0.5*uold(ind_leaf(i),idim+1)**2/nH(i)
-           write(*,*) 'ekk(i)', ekk(i) !DWM
+!           write(*,*) 'ekk(i)', ekk(i) !DWM
         end do
      end do
      do i=1,nleaf
@@ -193,9 +193,9 @@ subroutine coolfine1(ind_grid,ngrid,ilevel)
      ! Compute T2=T/mu in Kelvin
      do i=1,nleaf
         T2(i)=T2(i)/nH(i)*scale_T2
-        write(*,*) 'T2(i): ', T2(i), 'nH(i): ', nH(i) !DWM
+!        write(*,*) 'T2(i): ', T2(i), 'nH(i): ', nH(i) !DWM
      end do
-     write(*,*) 'scale_T2: ', scale_T2, 'scale_nH: ', scale_nH !DWM
+!     write(*,*) 'scale_T2: ', scale_T2, 'scale_nH: ', scale_nH !DWM
 
      ! Compute nH in H/cc
      do i=1,nleaf
