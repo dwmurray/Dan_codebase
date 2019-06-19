@@ -78,9 +78,9 @@ subroutine update_time(ilevel)
            ! Output mass and energy conservation to screen
            !----------------------------------------------
            if(cooling.or.pressure_fix)then
-              write(*,778)nstep_coarse,econs*scale_enr,epot_tot*scale_enr,ekin_tot*scale_enr,eint_tot*scale_enr
+              write(*,778)nstep_coarse,econs*scale_ener,epot_tot*scale_ener,ekin_tot*scale_ener,eint_tot*scale_ener
            else
-              write(*,777)nstep_coarse,mcons,econs*scale_enr,epot_tot*scale_enr,ekin_tot*scale_enr
+              write(*,777)nstep_coarse,mcons,econs*scale_ener,epot_tot*scale_ener,ekin_tot*scale_ener
            end if
 #ifdef SOLVERmhd
            write(*,'(" emag=",ES9.2)') emag_tot
@@ -128,7 +128,7 @@ subroutine update_time(ilevel)
         else
            write(*,888)nstep,t,dt,aexp,&
                 & real(100.0D0*dble(used_mem_tot)/dble(ngridmax+1))
-           write(*,778)nstep_coarse,econs*scale_enr,epot_tot*scale_enr,ekin_tot*scale_enr,eint_tot*scale_enr !DWM
+           write(*,778)nstep_coarse,econs*scale_ener,epot_tot*scale_ener,ekin_tot*scale_ener,eint_tot*scale_ener !DWM
         endif
      end if
   end if
