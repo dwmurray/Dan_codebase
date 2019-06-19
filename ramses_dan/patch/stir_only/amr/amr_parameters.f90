@@ -18,14 +18,22 @@ module amr_parameters
 #endif
   integer,parameter::MAXOUT=1000
   integer,parameter::MAXLEVEL=100
-  
+
   ! Define integer types (for particle IDs mostly)
-  integer,parameter::i4b=4
+  ! Warning: compiler needs to accept fortran standard 2003.
+  ! Specific numbers for fortran kinds are, in principle, implementation
+  ! dependent, so "i8b=8" with "integer(i8b)" is implementation-dependent.
+  ! See portability note for non-gcc compilers: (boud 2016-11-29) -
+  ! https://gcc.gnu.org/onlinedocs/gfortran/ISO_005fFORTRAN_005fENV.html
+  ! The selected_int_kind approach below is more likely to be portable:
+  integer,parameter::i4b=selected_int_kind(9) ! since log(2*10^9)/log(2)=30.9
 #ifndef LONGINT
-  integer,parameter::i8b=4  ! default long int are short int
+  !integer,parameter::i8b=4  ! default long int are 4-byte int
+  integer,parameter::i8b=selected_int_kind(9) ! since log(2*10^9)/log(2)=30.9
 #else
-  integer,parameter::i8b=8  ! long int are long int
-#endif
+  integer, parameter :: i8b=selected_int_kind(18) ! since log(2*10^18)/log(2)=60.8
+  !integer,parameter::i8b=8  ! long int are 8-byte int
+#endif /* LONGINT */
 
   ! Number of dimensions
 #ifndef NDIM
@@ -54,7 +62,7 @@ module amr_parameters
   logical::cosmo   =.false.   ! Cosmology activated
   logical::star    =.false.   ! Star formation activated
   logical::sink    =.false.   ! Sink particles activated
-  logical::stir    =.false.   ! Stirring by hand activated !DWM 06/2019
+  logical::stir    =.false.   ! Stirring activated !DWM 05/2019
   logical::rt      =.false.   ! Radiative transfer activated
   logical::debug   =.false.   ! Debug mode activated
   logical::static  =.false.   ! Static mode activated
@@ -62,7 +70,7 @@ module amr_parameters
   logical::lightcone=.false.  ! Enable lightcone generation
   logical::clumpfind=.false.  ! Enable clump finder
   logical::aton=.false.       ! Enable ATON coarse grid radiation transfer
-  logical::fine_level_output=.false. ! Fine level output !DWM For use debugging
+  logical::fine_level_output=.false. ! Fine level output !Stirring !DWM 05/2019
 
   ! Mesh parameters
   integer::geom=1             ! 1: cartesian, 2: cylindrical, 3: spherical
@@ -96,6 +104,7 @@ module amr_parameters
   integer::foutput=1000000    ! Frequency of outputs
   integer::output_mode=0      ! Output mode (for hires runs)
   logical::gadget_output=.false. ! Output in gadget format
+  logical::output_now=.false. ! Write output next step !DWM 05/2019
 
   ! Lightcone parameters
   real(dp)::thetay_cone=12.5
@@ -123,7 +132,8 @@ module amr_parameters
   real(dp)::g_star =1.6D0     ! Typical ISM polytropic index
   real(dp)::jeans_ncells=-1   ! Jeans polytropic EOS
   real(dp)::del_star=2.D2     ! Minimum overdensity to define ISM
-  real(dp)::eta_sn =0.0D0     ! Supernova mass fraction
+  real(dp)::eta_sn  =0.0D0    ! Supernova mass fraction
+  real(dp)::eta_sn3 =0.0D0    ! Supernova mass fraction for PopIII SN
   real(dp)::yield  =0.0D0     ! Supernova yield
   real(dp)::f_ek   =1.0D0     ! Supernovae kinetic energy fraction (only between 0 and 1)
   real(dp)::rbubble=0.0D0     ! Supernovae superbubble radius in pc
@@ -131,8 +141,11 @@ module amr_parameters
   integer ::ndebris=1         ! Supernovae debris particle number
   real(dp)::mass_gmc=-1.0     ! Stochastic exploding GMC mass
   real(dp)::z_ave  =0.0D0     ! Average metal abundance
+  real(dp)::z_crit =1.0D-5    ! Critical metal, specified by the user in solar units (R Sarmento May 2014)
+  real(dp)::h2_frac=1.0D-6    ! Initial H2 gas fraction, Reed et al, 2005
+  real(dp)::lw_photon=1.0D4   ! Lyman-Werner photons per stellar baryon - decays h2_frac, Greif & Bromm, 2006
   real(dp)::B_ave  =0.0D0     ! Average magnetic field
-  real(dp)::z_reion=8.5D0     ! Reionization redshift
+  real(dp)::z_reion=8.5D0     ! Reionization redshift - R. Sarmento, changed to get better agreement w/ Planck
   real(dp)::T2_start          ! Starting gas temperature
   real(dp)::t_delay=1.0D1     ! Feedback time delay in Myr
   real(dp)::t_diss =20.0D0    ! Dissipation timescale for feedback
@@ -142,7 +155,6 @@ module amr_parameters
   real(dp)::kappa_IR=0d0      ! IR dust opacity
   real(dp)::ind_rsink=4.0d0   ! Number of cells defining the radius of the sphere where AGN feedback is active
   real(dp)::ir_eff=0.75       ! efficiency of the IR feedback (only when ir_feedback=.true.)
-
 
   logical ::self_shielding=.false.
   logical ::pressure_fix=.false.
@@ -158,33 +170,59 @@ module amr_parameters
   logical ::sink_drag=.true.  ! Gas dragging sink
   logical ::use_proper_time=.false.
   logical ::ir_feedback=.false. ! Activate ir feedback from accreting sinks
-
+  ! note that if you turn prist_gas_fraction to .true. the code 
+  ! will also turn turbulent_velocity to true
+  ! Turb_vel is required for the pristine_gas_fraction
+  logical ::prist_gas_fraction=.false. ! Rick S. Nov 2013 - used to track pristine gas fraction
+  logical ::turbulent_velocity=.false. ! Rick S. Mar 2014 - used to track turb vel
 
   ! Output times
   real(dp),dimension(1:MAXOUT)::aout=1.1       ! Output expansion factors
   real(dp),dimension(1:MAXOUT)::tout=0.0       ! Output times
 
   ! Movie
+  integer,parameter::NMOV=5
   integer::imovout=0             ! Increment for output times
   integer::imov=1                ! Initialize
+  real(kind=8)::tstartmov=0.,astartmov=0.
   real(kind=8)::tendmov=0.,aendmov=0.
   real(kind=8),allocatable,dimension(:)::amovout,tmovout
   logical::movie=.false.
   integer::nw_frame=512 ! prev: nx_frame, width of frame in pixels
   integer::nh_frame=512 ! prev: ny_frame, height of frame in pixels
   integer::levelmax_frame=0
-  integer::ivar_frame=1
-  real(kind=8),dimension(1:20)::xcentre_frame=0d0
-  real(kind=8),dimension(1:20)::ycentre_frame=0d0
-  real(kind=8),dimension(1:20)::zcentre_frame=0d0
-  real(kind=8),dimension(1:10)::deltax_frame=0d0
-  real(kind=8),dimension(1:10)::deltay_frame=0d0
-  real(kind=8),dimension(1:10)::deltaz_frame=0d0
-  character(LEN=5)::proj_axis='z' ! x->x, y->y, projection along z
+  real(kind=8),dimension(1:4*NMOV)::xcentre_frame=0d0
+  real(kind=8),dimension(1:4*NMOV)::ycentre_frame=0d0
+  real(kind=8),dimension(1:4*NMOV)::zcentre_frame=0d0
+  real(kind=8),dimension(1:2*NMOV)::deltax_frame=0d0
+  real(kind=8),dimension(1:2*NMOV)::deltay_frame=0d0
+  real(kind=8),dimension(1:2*NMOV)::deltaz_frame=0d0
+  real(kind=8),dimension(1:NMOV)::dtheta_camera=0d0
+  real(kind=8),dimension(1:NMOV)::dphi_camera=0d0
+  real(kind=8),dimension(1:NMOV)::theta_camera=0d0
+  real(kind=8),dimension(1:NMOV)::phi_camera=0d0
+  real(kind=8),dimension(1:NMOV)::tstart_theta_camera=0d0
+  real(kind=8),dimension(1:NMOV)::tstart_phi_camera=0d0
+  real(kind=8),dimension(1:NMOV)::tend_theta_camera=0d0
+  real(kind=8),dimension(1:NMOV)::tend_phi_camera=0d0
+  real(kind=8),dimension(1:NMOV)::focal_camera=0d0
+  real(kind=8),dimension(1:NMOV)::dist_camera=0d0
+  real(kind=8),dimension(1:NMOV)::ddist_camera=0d0
+  real(kind=8),dimension(1:NMOV)::smooth_frame=1d0
+  real(kind=8),dimension(1:NMOV)::varmin_frame=-1d60
+  real(kind=8),dimension(1:NMOV)::varmax_frame=1d60
+  integer,dimension(1:NMOV)::ivar_frame=0
+  logical,dimension(1:NMOV)::perspective_camera=.false.
+  logical,dimension(1:NMOV)::zoom_only_frame=.false.
+  character(LEN=NMOV)::proj_axis='z' ! x->x, y->y, projection along z
+  character(LEN=6),dimension(1:NMOV)::shader_frame='square'
+  character(LEN=10),dimension(1:NMOV)::method_frame='mean_mass'
 #ifdef SOLVERmhd
-  integer,dimension(0:NVAR+4)::movie_vars=0
+  integer,dimension(0:NVAR+7)::movie_vars=0
+  character(len=5),dimension(0:NVAR+7)::movie_vars_txt=''
 #else
-  integer,dimension(0:NVAR)::movie_vars=0
+  integer,dimension(0:NVAR+3)::movie_vars=0
+  character(len=5),dimension(0:NVAR+3)::movie_vars_txt=''
 #endif
 
   ! Refinement parameters for each level
@@ -235,5 +273,17 @@ module amr_parameters
   integer ,dimension(1:MAXBOUND)    ::jbound_max=0
   integer ,dimension(1:MAXBOUND)    ::kbound_min=0
   integer ,dimension(1:MAXBOUND)    ::kbound_max=0
+  logical                           ::no_inflow=.false.
+
+  !Number of processes sharing one token
+  !Only one process can write at a time in an I/O group
+  integer::IOGROUPSIZE=0           ! Main snapshot
+  integer::IOGROUPSIZECONE=0       ! Lightcone
+  integer::IOGROUPSIZEREP=0        ! Subfolder size
+  logical::withoutmkdir=.false.    !If true mkdir should be done before the run
+  logical::print_when_io=.false.   !If true print when IO
+  logical::synchro_when_io=.false. !If true synchronize when IO
+
+
 
 end module amr_parameters

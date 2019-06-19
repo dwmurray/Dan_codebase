@@ -260,6 +260,7 @@ subroutine add_stir_source_terms(ilevel)
   if(numbtot(1,ilevel)==0)return
   if(verbose)write(*,111)ilevel
 
+  write(*,*)'iax is', nvar-stir_nvar+1
   ! Add stirsource term at time t with half time step
   do ind=1,twotondim
      iskip=ncoarse+(ind-1)*ngridmax
@@ -302,7 +303,7 @@ subroutine add_stir_source_terms(ilevel)
      end do
   end do
 
-111 format('   Entering add_gravity_source_terms for level ',i2)
+111 format('   Entering stir_source_terms for level ',i2)
 
 end subroutine add_stir_source_terms
 !###########################################################
