@@ -122,23 +122,23 @@ subroutine output_frame()
   write(temp_string,'(I1)') proj_ind
   moviedir = 'movie'//trim(temp_string)//'/'
   moviecmd = 'mkdir -p '//trim(moviedir)
-!  if(.not.withoutmkdir) then
-!#ifdef NOSYSTEM
-!     if(myid==1)call PXFMKDIR(TRIM(moviedir),LEN(TRIM(moviedir)),O'755',info2)
-!#else
-!     if(myid==1)then
-!        call EXECUTE_COMMAND_LINE(moviecmd,exitstat=ierr,wait=.true.)
-!     endif
-!#ifndef WITHOUTMPI
-!     call MPI_BCAST(ierr,1,MPI_INTEGER,0,MPI_COMM_WORLD,info)
-!     if(ierr.ne.0 .and. ierr.ne.127)then
-!        write(*,*) 'Error - Could not create ',trim(moviedir)
-!        call MPI_ABORT(MPI_COMM_WORLD,1,info)
-!        stop
-!     endif
-!#endif
-!#endif
-!  endif
+  if(.not.withoutmkdir) then
+#ifdef NOSYSTEM
+     if(myid==1)call PXFMKDIR(TRIM(moviedir),LEN(TRIM(moviedir)),O'755',info2)
+#else
+     if(myid==1)then
+        call EXECUTE_COMMAND_LINE(moviecmd,exitstat=ierr,wait=.true.)
+     endif
+#ifndef WITHOUTMPI
+     call MPI_BCAST(ierr,1,MPI_INTEGER,0,MPI_COMM_WORLD,info)
+     if(ierr.ne.0 .and. ierr.ne.127)then
+        write(*,*) 'Error - Could not create ',trim(moviedir)
+        call MPI_ABORT(MPI_COMM_WORLD,1,info)
+        stop
+     endif
+#endif
+#endif
+  endif
 
   infofile = trim(moviedir)//'info_'//trim(istep_str)//'.txt'
   if(myid==1)call output_info(infofile)
@@ -279,26 +279,26 @@ subroutine output_frame()
   delx=deltax_frame(proj_ind*2-1)+deltax_frame(proj_ind*2)/aexp
   dely=deltay_frame(proj_ind*2-1)+deltay_frame(proj_ind*2)/aexp
   delz=deltaz_frame(proj_ind*2-1)+deltaz_frame(proj_ind*2)/aexp
-!  if(dist_camera(proj_ind).le.0D0) dist_camera(proj_ind) = boxlen
+  if(dist_camera(proj_ind).le.0D0) dist_camera(proj_ind) = boxlen
 
   ! Camera properties
-!  if(cosmo) then
-!     if(tend_theta_camera(proj_ind).le.0d0) tend_theta_camera(proj_ind) = aendmov
-!     if(tend_phi_camera(proj_ind).le.0d0) tend_phi_camera(proj_ind) = aendmov
-!     theta_cam  = theta_camera(proj_ind)*pi/180.                                                                                 &
-!                +min(max(aexp-tstart_theta_camera(proj_ind),0d0),tend_theta_camera(proj_ind))*dtheta_camera(proj_ind)*pi/180./(aendmov-astartmov)
-!     phi_cam    = phi_camera(proj_ind)*pi/180.                                                                                   &
-!                +min(max(aexp-tstart_theta_camera(proj_ind),0d0),tend_phi_camera(proj_ind))*dphi_camera(proj_ind)*pi/180./(aendmov-astartmov)
-!     dist_cam   = dist_camera(proj_ind)+min(max(aexp-tstart_theta_camera(proj_ind),0d0),tend_theta_camera(proj_ind))*ddist_camera(proj_ind)/(aendmov-astartmov)
-!  else
-!     if(tend_theta_camera(proj_ind).le.0d0) tend_theta_camera(proj_ind) = tendmov
-!     if(tend_phi_camera(proj_ind).le.0d0) tend_phi_camera(proj_ind) = tendmov
-!     theta_cam  = theta_camera(proj_ind)*pi/180.                                                                                 &
-!                +min(max(t-tstart_theta_camera(proj_ind),0d0),tend_theta_camera(proj_ind))*dtheta_camera(proj_ind)*pi/180./(tendmov-tstartmov)
-!     phi_cam    = phi_camera(proj_ind)*pi/180.                                                                                   &
-!                +min(max(t-tstart_phi_camera(proj_ind),0d0),tend_phi_camera(proj_ind))*dphi_camera(proj_ind)*pi/180./(tendmov-tstartmov)
-!     dist_cam   = dist_camera(proj_ind)+min(max(t-tstart_theta_camera(proj_ind),0d0),tend_theta_camera(proj_ind))*ddist_camera(proj_ind)/(tendmov-tstartmov)
-!  endif
+  if(cosmo) then
+     if(tend_theta_camera(proj_ind).le.0d0) tend_theta_camera(proj_ind) = aendmov
+     if(tend_phi_camera(proj_ind).le.0d0) tend_phi_camera(proj_ind) = aendmov
+     theta_cam  = theta_camera(proj_ind)*pi/180.                                                                                 &
+                +min(max(aexp-tstart_theta_camera(proj_ind),0d0),tend_theta_camera(proj_ind))*dtheta_camera(proj_ind)*pi/180./(aendmov-astartmov)
+     phi_cam    = phi_camera(proj_ind)*pi/180.                                                                                   &
+                +min(max(aexp-tstart_theta_camera(proj_ind),0d0),tend_phi_camera(proj_ind))*dphi_camera(proj_ind)*pi/180./(aendmov-astartmov)
+     dist_cam   = dist_camera(proj_ind)+min(max(aexp-tstart_theta_camera(proj_ind),0d0),tend_theta_camera(proj_ind))*ddist_camera(proj_ind)/(aendmov-astartmov)
+  else
+     if(tend_theta_camera(proj_ind).le.0d0) tend_theta_camera(proj_ind) = tendmov
+     if(tend_phi_camera(proj_ind).le.0d0) tend_phi_camera(proj_ind) = tendmov
+     theta_cam  = theta_camera(proj_ind)*pi/180.                                                                                 &
+                +min(max(t-tstart_theta_camera(proj_ind),0d0),tend_theta_camera(proj_ind))*dtheta_camera(proj_ind)*pi/180./(tendmov-tstartmov)
+     phi_cam    = phi_camera(proj_ind)*pi/180.                                                                                   &
+                +min(max(t-tstart_phi_camera(proj_ind),0d0),tend_phi_camera(proj_ind))*dphi_camera(proj_ind)*pi/180./(tendmov-tstartmov)
+     dist_cam   = dist_camera(proj_ind)+min(max(t-tstart_theta_camera(proj_ind),0d0),tend_theta_camera(proj_ind))*ddist_camera(proj_ind)/(tendmov-tstartmov)
+  endif
 
   if((focal_camera(proj_ind).le.0D0).or.(focal_camera(proj_ind).gt.dist_camera(proj_ind))) focal_camera(proj_ind) = dist_cam
   fov_camera = atan((delx/2d0)/focal_camera(proj_ind))
@@ -306,11 +306,11 @@ subroutine output_frame()
   if(myid==1) then
      write(*,'(5A,F6.1,A,F6.1)',advance='no') ' Writing frame ', istep_str,' los=',proj_axis(proj_ind:proj_ind),   &
      &                                              ' theta=',theta_cam*180./pi,' phi=',phi_cam*180./pi
-!     if(perspective_camera(proj_ind))then
-!        write(*,'(A,F8.2,A,F6.1)') ' d=',dist_cam,' fov=',fov_camera*180./pi
-!     else
-!        write(*,'(A)') ''
-!     endif
+     if(perspective_camera(proj_ind))then
+        write(*,'(A,F8.2,A,F6.1)') ' d=',dist_cam,' fov=',fov_camera*180./pi
+     else
+        write(*,'(A)') ''
+     endif
   endif
 #else
   if(myid==1) write(*,'(3A,F6.1)') " Writing frame ", istep_str,' theta=',theta_cam*180./pi
@@ -1174,46 +1174,46 @@ subroutine set_movie_vars()
   integer::ll
 #endif
 
-!  ! This routine sets the movie vars from textual form
-!
-!  if(ANY(movie_vars_txt=='temp ')) movie_vars(0)=1
-!  if(ANY(movie_vars_txt=='dens ')) movie_vars(1)=1
-!  if(ANY(movie_vars_txt=='vx   ')) movie_vars(2)=1
-!  if(ANY(movie_vars_txt=='vy   ')) movie_vars(3)=1
-!#ifdef SOLVERmhd
-!  if(ANY(movie_vars_txt=='vz   ')) movie_vars(4)=1
-!  if(ANY(movie_vars_txt=='pres ')) movie_vars(5)=1
-!#else
-!#if NDIM==2
-!  if(ANY(movie_vars_txt=='pres ')) movie_vars(4)=1
-!#endif
-!#if NDIM>2
-!  if(ANY(movie_vars_txt=='vz   ')) movie_vars(4)=1
-!  if(ANY(movie_vars_txt=='pres ')) movie_vars(5)=1
-!#endif
-!#endif
-!#if NVAR>5
-!  do ll=6,NVAR
-!    write(dummy,'(I3.1)') ll
-!    if(ANY(movie_vars_txt=='var'//trim(adjustl(dummy))//' ')) movie_vars(ll)=1
-! end do
-!#endif
-!#ifdef SOLVERmhd
-!  if(ANY(movie_vars_txt=='bxl  ')) movie_vars(6)=1
-!  if(ANY(movie_vars_txt=='byl  ')) movie_vars(7)=1
-!  if(ANY(movie_vars_txt=='bzl  ')) movie_vars(8)=1
-!  if(ANY(movie_vars_txt=='bxr  ')) movie_vars(NVAR+1)=1
-!  if(ANY(movie_vars_txt=='byr  ')) movie_vars(NVAR+2)=1
-!  if(ANY(movie_vars_txt=='bzr  ')) movie_vars(NVAR+3)=1
-!  if(ANY(movie_vars_txt=='pmag ')) movie_vars(NVAR+4)=1
-!  if(ANY(movie_vars_txt=='dm   ')) movie_vars(NVAR+5)=1
-!  if(ANY(movie_vars_txt=='stars')) movie_vars(NVAR+6)=1
-!  if(ANY(movie_vars_txt=='lum  ')) movie_vars(NVAR+7)=1
-!#else
-!  if(ANY(movie_vars_txt=='dm   ')) movie_vars(NVAR+1)=1
-!  if(ANY(movie_vars_txt=='stars')) movie_vars(NVAR+2)=1
-!  if(ANY(movie_vars_txt=='lum  ')) movie_vars(NVAR+3)=1
-!#endif
+  ! This routine sets the movie vars from textual form
+
+  if(ANY(movie_vars_txt=='temp ')) movie_vars(0)=1
+  if(ANY(movie_vars_txt=='dens ')) movie_vars(1)=1
+  if(ANY(movie_vars_txt=='vx   ')) movie_vars(2)=1
+  if(ANY(movie_vars_txt=='vy   ')) movie_vars(3)=1
+#ifdef SOLVERmhd
+  if(ANY(movie_vars_txt=='vz   ')) movie_vars(4)=1
+  if(ANY(movie_vars_txt=='pres ')) movie_vars(5)=1
+#else
+#if NDIM==2
+  if(ANY(movie_vars_txt=='pres ')) movie_vars(4)=1
+#endif
+#if NDIM>2
+  if(ANY(movie_vars_txt=='vz   ')) movie_vars(4)=1
+  if(ANY(movie_vars_txt=='pres ')) movie_vars(5)=1
+#endif
+#endif
+#if NVAR>5
+  do ll=6,NVAR
+    write(dummy,'(I3.1)') ll
+    if(ANY(movie_vars_txt=='var'//trim(adjustl(dummy))//' ')) movie_vars(ll)=1
+ end do
+#endif
+#ifdef SOLVERmhd
+  if(ANY(movie_vars_txt=='bxl  ')) movie_vars(6)=1
+  if(ANY(movie_vars_txt=='byl  ')) movie_vars(7)=1
+  if(ANY(movie_vars_txt=='bzl  ')) movie_vars(8)=1
+  if(ANY(movie_vars_txt=='bxr  ')) movie_vars(NVAR+1)=1
+  if(ANY(movie_vars_txt=='byr  ')) movie_vars(NVAR+2)=1
+  if(ANY(movie_vars_txt=='bzr  ')) movie_vars(NVAR+3)=1
+  if(ANY(movie_vars_txt=='pmag ')) movie_vars(NVAR+4)=1
+  if(ANY(movie_vars_txt=='dm   ')) movie_vars(NVAR+5)=1
+  if(ANY(movie_vars_txt=='stars')) movie_vars(NVAR+6)=1
+  if(ANY(movie_vars_txt=='lum  ')) movie_vars(NVAR+7)=1
+#else
+  if(ANY(movie_vars_txt=='dm   ')) movie_vars(NVAR+1)=1
+  if(ANY(movie_vars_txt=='stars')) movie_vars(NVAR+2)=1
+  if(ANY(movie_vars_txt=='lum  ')) movie_vars(NVAR+3)=1
+#endif
 #ifdef RT
   do ll=1,NGROUPS
     write(dummy,'(I3.1)') ll
