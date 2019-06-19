@@ -89,6 +89,8 @@ subroutine update_time(ilevel)
            else
               write(*,888)nstep,t,dt,aexp,&
                    & real(100.0D0*dble(used_mem_tot)/dble(ngridmax+1))
+              write(*,*) 'scale_ener', scale_ener
+              write(*,778)nstep_coarse,econs*scale_ener,epot_tot*scale_ener,ekin_tot*scale_ener,eint_tot*scale_ener
            endif
            
            itest=1

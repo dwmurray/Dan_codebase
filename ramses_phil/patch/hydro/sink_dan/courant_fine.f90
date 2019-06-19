@@ -106,10 +106,10 @@ subroutine courant_fine(ilevel)
         
         ! Compute CFL time-step
         if(nleaf>0)then
-           write(*,*) 'Prior to call cmpdt uu: ', uu(1,1), uu(100,1) !DWM
+           write(*,*) 'Prior to call cmpdt uu: ', uu(1,1), uu(nleaf/2.,1), 'with nleaf: ', nleaf !DWM
            call cmpdt(uu,gg,dx,dt_lev,nleaf)
            dt_loc=min(dt_loc,dt_lev)
-           write(*,*) 'Apres call cmpdt uu: ', uu(1,1), uu(100,1) !DWM
+           write(*,*) 'Apres call cmpdt uu: ', uu(1,1), uu(nleaf/2.,1) !DWM
            write(*,*) 'CFL time-step: ', dt_loc !DWM
         end if
         
