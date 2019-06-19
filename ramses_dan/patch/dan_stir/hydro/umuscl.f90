@@ -870,6 +870,8 @@ subroutine ctoprim(uin,q,c,gravin,dt,ngrid)
   integer ::i, j, k, l, n, idim, irad
   real(dp)::eint, smalle, dtxhalf, oneoverrho
   real(dp)::eken, erad
+  !DWM Stir
+  integer ::iax,iay,iaz
 
   smalle = smallc**2/gamma/(gamma-one)
   dtxhalf = dt*half
@@ -929,6 +931,16 @@ subroutine ctoprim(uin,q,c,gravin,dt,ngrid)
 #endif
 #if NDIM>2
               q(l,i,j,k,4) = q(l,i,j,k,4) + gravin(l,i,j,k,3)*dtxhalf
+#endif
+              ! Stir predictor step !DWM
+              !ndim+3 for romain, +4 for Rick's metal,iprist,vt,primordZ
+              iax = ndim+3+nener+4; iay=iax+1; iaz=iay+1 
+              q(l,i,j,k,2) = q(l,i,j,k,2) + q(l,i,j,k,iax)*dtxhalf
+#if NDIM>1
+              q(l,i,j,k,3) = q(l,i,j,k,3) + q(l,i,j,k,iay)*dtxhalf
+#endif
+#if NDIM>2
+              q(l,i,j,k,4) = q(l,i,j,k,4) + q(l,i,j,k,iaz)*dtxhalf
 #endif
 
            end do
