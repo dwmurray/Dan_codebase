@@ -1174,46 +1174,46 @@ subroutine set_movie_vars()
   integer::ll
 #endif
 
-  ! This routine sets the movie vars from textual form
-
-  if(ANY(movie_vars_txt=='temp ')) movie_vars(0)=1
-  if(ANY(movie_vars_txt=='dens ')) movie_vars(1)=1
-  if(ANY(movie_vars_txt=='vx   ')) movie_vars(2)=1
-  if(ANY(movie_vars_txt=='vy   ')) movie_vars(3)=1
-#ifdef SOLVERmhd
-  if(ANY(movie_vars_txt=='vz   ')) movie_vars(4)=1
-  if(ANY(movie_vars_txt=='pres ')) movie_vars(5)=1
-#else
-#if NDIM==2
-  if(ANY(movie_vars_txt=='pres ')) movie_vars(4)=1
-#endif
-#if NDIM>2
-  if(ANY(movie_vars_txt=='vz   ')) movie_vars(4)=1
-  if(ANY(movie_vars_txt=='pres ')) movie_vars(5)=1
-#endif
-#endif
-#if NVAR>5
-  do ll=6,NVAR
-    write(dummy,'(I3.1)') ll
-    if(ANY(movie_vars_txt=='var'//trim(adjustl(dummy))//' ')) movie_vars(ll)=1
- end do
-#endif
-#ifdef SOLVERmhd
-  if(ANY(movie_vars_txt=='bxl  ')) movie_vars(6)=1
-  if(ANY(movie_vars_txt=='byl  ')) movie_vars(7)=1
-  if(ANY(movie_vars_txt=='bzl  ')) movie_vars(8)=1
-  if(ANY(movie_vars_txt=='bxr  ')) movie_vars(NVAR+1)=1
-  if(ANY(movie_vars_txt=='byr  ')) movie_vars(NVAR+2)=1
-  if(ANY(movie_vars_txt=='bzr  ')) movie_vars(NVAR+3)=1
-  if(ANY(movie_vars_txt=='pmag ')) movie_vars(NVAR+4)=1
-  if(ANY(movie_vars_txt=='dm   ')) movie_vars(NVAR+5)=1
-  if(ANY(movie_vars_txt=='stars')) movie_vars(NVAR+6)=1
-  if(ANY(movie_vars_txt=='lum  ')) movie_vars(NVAR+7)=1
-#else
-  if(ANY(movie_vars_txt=='dm   ')) movie_vars(NVAR+1)=1
-  if(ANY(movie_vars_txt=='stars')) movie_vars(NVAR+2)=1
-  if(ANY(movie_vars_txt=='lum  ')) movie_vars(NVAR+3)=1
-#endif
+!  ! This routine sets the movie vars from textual form
+!
+!  if(ANY(movie_vars_txt=='temp ')) movie_vars(0)=1
+!  if(ANY(movie_vars_txt=='dens ')) movie_vars(1)=1
+!  if(ANY(movie_vars_txt=='vx   ')) movie_vars(2)=1
+!  if(ANY(movie_vars_txt=='vy   ')) movie_vars(3)=1
+!#ifdef SOLVERmhd
+!  if(ANY(movie_vars_txt=='vz   ')) movie_vars(4)=1
+!  if(ANY(movie_vars_txt=='pres ')) movie_vars(5)=1
+!#else
+!#if NDIM==2
+!  if(ANY(movie_vars_txt=='pres ')) movie_vars(4)=1
+!#endif
+!#if NDIM>2
+!  if(ANY(movie_vars_txt=='vz   ')) movie_vars(4)=1
+!  if(ANY(movie_vars_txt=='pres ')) movie_vars(5)=1
+!#endif
+!#endif
+!#if NVAR>5
+!  do ll=6,NVAR
+!    write(dummy,'(I3.1)') ll
+!    if(ANY(movie_vars_txt=='var'//trim(adjustl(dummy))//' ')) movie_vars(ll)=1
+! end do
+!#endif
+!#ifdef SOLVERmhd
+!  if(ANY(movie_vars_txt=='bxl  ')) movie_vars(6)=1
+!  if(ANY(movie_vars_txt=='byl  ')) movie_vars(7)=1
+!  if(ANY(movie_vars_txt=='bzl  ')) movie_vars(8)=1
+!  if(ANY(movie_vars_txt=='bxr  ')) movie_vars(NVAR+1)=1
+!  if(ANY(movie_vars_txt=='byr  ')) movie_vars(NVAR+2)=1
+!  if(ANY(movie_vars_txt=='bzr  ')) movie_vars(NVAR+3)=1
+!  if(ANY(movie_vars_txt=='pmag ')) movie_vars(NVAR+4)=1
+!  if(ANY(movie_vars_txt=='dm   ')) movie_vars(NVAR+5)=1
+!  if(ANY(movie_vars_txt=='stars')) movie_vars(NVAR+6)=1
+!  if(ANY(movie_vars_txt=='lum  ')) movie_vars(NVAR+7)=1
+!#else
+!  if(ANY(movie_vars_txt=='dm   ')) movie_vars(NVAR+1)=1
+!  if(ANY(movie_vars_txt=='stars')) movie_vars(NVAR+2)=1
+!  if(ANY(movie_vars_txt=='lum  ')) movie_vars(NVAR+3)=1
+!#endif
 #ifdef RT
   do ll=1,NGROUPS
     write(dummy,'(I3.1)') ll
