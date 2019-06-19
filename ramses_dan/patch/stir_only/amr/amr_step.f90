@@ -139,14 +139,15 @@ recursive subroutine amr_step(ilevel,icount)
   !----------------------------
   ! Output frame to movie dump (without synced levels)
   !----------------------------
-  if(movie) then
-     if(imov.le.imovout)then ! ifort returns error for next statement if looking
-                             ! beyond what is allocated as an array amovout/tmovout
-        if(aexp>=amovout(imov).or.t>=tmovout(imov))then
-           call output_frame()
-        endif
-     endif
-  end if
+  !DWM STir only sim.
+!  if(movie) then
+!     if(imov.le.imovout)then ! ifort returns error for next statement if looking
+!                             ! beyond what is allocated as an array amovout/tmovout
+!        if(aexp>=amovout(imov).or.t>=tmovout(imov))then
+!           call output_frame()
+!        endif
+!     endif
+!  end if
 
   !-----------------------------------------------------------
   ! Put here all stuffs that are done only at coarse time step
