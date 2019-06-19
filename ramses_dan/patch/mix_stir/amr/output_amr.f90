@@ -29,6 +29,7 @@ subroutine dump_all
   if(ndim>1)then
      filedir='output_'//TRIM(nchar)//'/'
      filecmd='mkdir -p '//TRIM(filedir)
+     if(myid==1)write(*,*)'writing: ', TRIM(filedir)
 #ifdef NOSYSTEM
      call PXFMKDIR(TRIM(filedir),LEN(TRIM(filedir)),O'755',info)
 #else
