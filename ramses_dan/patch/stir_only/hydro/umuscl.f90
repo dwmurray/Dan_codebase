@@ -855,7 +855,9 @@ subroutine ctoprim(uin,q,c,gravin,dt,ngrid)
   integer ::i, j, k, l, n, idim, irad
   real(dp)::eint, smalle, dtxhalf, oneoverrho
   real(dp)::eken, erad
-
+  !DWM Stir
+  integer ::iax,iay,iaz
+  
   smalle = smallc**2/gamma/(gamma-one)
   dtxhalf = dt*half
 
