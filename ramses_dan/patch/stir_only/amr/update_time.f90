@@ -13,6 +13,12 @@ subroutine update_time(ilevel)
   real(kind=8)::ttend
   real(kind=8),save::ttstart=0
   integer::i,itest,info
+  ! DWM convert energy to cgs units not code
+  real(dp):: scale_nH, scale_T2, scale_l, scale_d, scale_t, scale_v, scale_ener
+  
+  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
+  scale_ener = scale_d*scale_l**3. * scale_v**2.
+
 
   ! Local constants
   dt=dtnew(ilevel)
