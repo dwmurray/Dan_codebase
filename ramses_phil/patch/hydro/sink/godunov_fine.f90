@@ -298,6 +298,8 @@ subroutine add_stir_source_terms(ilevel)
         endif
         e_kin=0.5*d*(u**2+v**2+w**2)
         unew(ind_cell,ndim+2)=e_prim+e_kin
+        write(*,*)'Stir Source End. rho: ', d, 'u,v,w:', u,v,w, &
+             'accel ax,ay,az', ax,ay,az, 'ekin', e_kin,'unew(,5): ', unew(ind_cell, 5) !DWM
      end do
   end do
 
