@@ -230,7 +230,7 @@ subroutine pristine_up(ind_grid,ngrid,ilevel)
            
            ! Get the total fluid energy density (still have rho in here)
            totEnergy = uold(ind_leaf(i),ndim+2) ! An energy density (* rho)
-           write(*,*)'TotEner density Prist_Up call: '. totEnergy !DWM
+           write(*,*)'TotEner density Prist_Up call: ', totEnergy !DWM
            ! Subtract the bulk motion/kinetic energy to get internal energy 
            ! Just the random motions of the gas particles...
            kinEnergy = 0.0d0;
@@ -241,8 +241,8 @@ subroutine pristine_up(ind_grid,ngrid,ilevel)
               kinEnergy = kinEnergy + 0.5d0 * (uold(ind_leaf(i),idim+1)**2)/nH
            end do
            thermEnergy = totEnergy - kinEnergy
-           write(*,*)'KinEner density Prist_Up call: '. kinEnergy !DWM
-           write(*,*)'thermEner density Prist_Up call: '. thermEnergy !DWM
+           write(*,*)'KinEner density Prist_Up call: ', kinEnergy !DWM
+           write(*,*)'thermEner density Prist_Up call: ', thermEnergy !DWM
 
            ! Compute temperature 
            ! P = nkT ( or PV = NkT -> P = rho kT w/ rho = n, number density)
