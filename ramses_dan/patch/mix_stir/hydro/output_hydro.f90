@@ -2,20 +2,13 @@ subroutine backup_hydro(filename)
   use amr_commons
   use hydro_commons
   implicit none
-#ifndef WITHOUTMPI
-  include 'mpif.h'  
-#endif
-
   character(LEN=80)::filename
 
   integer::i,ivar,ncache,ind,ilevel,igrid,iskip,ilun,istart,ibound,irad
   integer,allocatable,dimension(:)::ind_grid
   real(dp),allocatable,dimension(:)::xdp
-!!$  real(dp)::pgas
   character(LEN=5)::nchar
   character(LEN=80)::fileloc
-  integer,parameter::tag=1121
-  integer::dummy_io,info2
 
   if(verbose)write(*,*)'Entering backup_hydro'
 
@@ -23,18 +16,6 @@ subroutine backup_hydro(filename)
      
   call title(myid,nchar)
   fileloc=TRIM(filename)//TRIM(nchar)
-
-!!$  ! Wait for the token
-!!$#ifndef WITHOUTMPI
-!!$  if(IOGROUPSIZE>0) then
-!!$     if (mod(myid-1,IOGROUPSIZE)/=0) then
-!!$        call MPI_RECV(dummy_io,1,MPI_INTEGER,myid-1-1,tag,&
-!!$             & MPI_COMM_WORLD,MPI_STATUS_IGNORE,info2)
-!!$     end if
-!!$  endif
-!!$#endif
-  
-
   open(unit=ilun,file=fileloc,form='unformatted')
   write(ilun)ncpu
   write(ilun)nvar
@@ -88,16 +69,12 @@ subroutine backup_hydro(filename)
               end do
 #endif
               ! Write thermal pressure
-              ! Note that the code only divides out ONE factor of rho … 
-              ! Hence xdp still has 'code units' (called user units in RAMSES)
-              ! since it is still multiplied by a factor of rho !! This is 
-              ! important as you can subtract the K.E. from P only if the units
-              ! are equal… Remember that uold(,5) is Pressure in user units: 
-              ! i.e. - P * rho … so we need that factor of rho in the K.E. 
-              ! term until we are done!!
               do i=1,ncache
+                 !write(*,*)i,'Uold: ',uold(ind_grid(i)+iskip,ndim+2)!DWM
                  xdp(i)=uold(ind_grid(i)+iskip,ndim+2)
+
                  xdp(i)=xdp(i)-0.5d0*uold(ind_grid(i)+iskip,2)**2/max(uold(ind_grid(i)+iskip,1),smallr)
+
 #if NDIM>1
                  xdp(i)=xdp(i)-0.5d0*uold(ind_grid(i)+iskip,3)**2/max(uold(ind_grid(i)+iskip,1),smallr)
 #endif
@@ -109,26 +86,17 @@ subroutine backup_hydro(filename)
                     xdp(i)=xdp(i)-uold(ind_grid(i)+iskip,ndim+2+irad)
                  end do
 #endif
+                 !write(*,*) 'xdp(i) prior to gamma -1', xdp(i) !DWM
                  xdp(i)=(gamma-1d0)*xdp(i)
               end do
               write(ilun)xdp
+              write(*,*) 'end do loop: Xdp',xdp
+              !write(*,*)'Internal Energy Output_:', xdp(1),xdp(10),xdp(11),ncache !DWM
 #if NVAR>NDIM+2+NENER
               ! Write passive scalars
               do ivar=ndim+3+nener,nvar
                  do i=1,ncache
-                    ! Rick Sarmento - Nov 2013
-                    ! All scalars are multiplied by rho while carried along
-                    ! in the code... Before writing them out, they are divided
-                    ! by rho (or smallr=1.d-10 if the init conds were 
-                    ! internally generated).
                     xdp(i)=uold(ind_grid(i)+iskip,ivar)/max(uold(ind_grid(i)+iskip,1),smallr)
-!!$                    if ( ivar == iprist ) pgas = xdp(i)
-!!$                    if ( (ivar == iturbvel).AND.(pgas < 0.999d0) ) then
-!!$                       print *,"out_hydro: a = ", aexp
-!!$                       print *,"out_hydro: cell ", ind_grid(i)+iskip
-!!$                       print *,"out_hydro: P ", pgas
-!!$                       print *,"out_hydro: v_t aexp cell: ", xdp(i), aexp, ind_grid(i)+iskip
-!!$                    endif
                  end do
                  write(ilun)xdp
               end do
@@ -139,19 +107,7 @@ subroutine backup_hydro(filename)
      end do
   end do
   close(ilun)
-   
-!!$  ! Send the token
-!!$#ifndef WITHOUTMPI
-!!$  if(IOGROUPSIZE>0) then
-!!$     if(mod(myid,IOGROUPSIZE)/=0 .and.(myid.lt.ncpu))then
-!!$        dummy_io=1
-!!$        call MPI_SEND(dummy_io,1,MPI_INTEGER,myid-1+1,tag, &
-!!$             & MPI_COMM_WORLD,info2)
-!!$     end if
-!!$  endif
-!!$#endif
-  
-  
+     
 end subroutine backup_hydro
 
 
