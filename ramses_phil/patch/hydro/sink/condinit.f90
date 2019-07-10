@@ -45,7 +45,7 @@ subroutine condinit(x,u,dx,nn)
   id=1; iu=2; iv=3; iw=4; ip=5; iax=6; iay=7; iaz=8;
   rho1=d_region(1)
   v1=0d0
-  p1=rho1*T2_star/(scale_v*scale_v)/gamma
+  p1=rho1*T2_star/(scale_v*scale_v)!/gamma !DWM
   
   theta=0.4
   !write(*,*) T2_star, gamma
