@@ -45,7 +45,7 @@ subroutine condinit(x,u,dx,nn)
   id=1; iu=2; iv=3; iw=4; ip=5; iax=10; iay=11; iaz=12; ! Hardcoded for 3D!! DWM iax-iaz = 10, 11 ,12 b/c Rick mods
   rho1=d_region(1)
   v1=0d0
-  p1=rho1*T2_star/(scale_v*scale_v)/gamma
+  p1=rho1*T2_star/(scale_v*scale_v)! /gamma !DWM believe this /gamma does not belong.
 !  write (*,*),'rho1',rho1
 !  write (*,*),'T2_star',T2_star
 !  write (*,*),'scale_v',scale_v
