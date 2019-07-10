@@ -5,13 +5,13 @@
 NVECTOR = 500
 NDIM = 3
 NPRE = 8
-# Not Tracking metals, pristine fraction, turb vel, primordialz -> 9 vars 
-# Stir adds 3 -> 8 vars
-NVAR = 8
+# Tracking metals, pristine fraction, turb vel, primordialz -> 9 vars
+NVAR = 12
 NENER = 0
 SOLVER = hydro
-PATCH = ../patch/stir_only/amr:../patch/stir_only/hydro:../patch/stir_only/pm
-EXEC = ramses_stir
+# Rick Sarmento - Pathes to implement pristine fraction scalar, H2 (molecular cooling)
+PATCH = ../patch/mix_stir/hydro:../patch/mix_stir/amr:../patch/mix_stir/pm
+EXEC = ramses_mix
 #############################################################################
 GITBRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 GITHASH = $(shell git log --pretty=oneline --abbrev-commit --abbrev=8 -n 1 | sed "s/'//g")
@@ -95,11 +95,12 @@ VPATH = $(PATCH):../$(SOLVER):../aton:../hydro:../pm:../poisson:../amr
 # All objects
 MODOBJ = amr_parameters.o amr_commons.o random.o pm_parameters.o pm_commons.o poisson_parameters.o \
          poisson_commons.o hydro_parameters.o hydro_commons.o cooling_module.o bisection.o sparse_mat.o \
-         clfind_commons.o gadgetreadfile.o write_makefile.o #write_patch.o write_gitinfo.o # DWM rm patch & git if need
+         clfind_commons.o gadgetreadfile.o write_makefile.o #write_patch.o write_gitinfo.o
 
+# Rick Sarmento - note that pristine_update.o has been added. It only appears in patch/hydro/rick dir.
 AMROBJ = read_params.o init_amr.o init_time.o init_refine.o adaptive_loop.o amr_step.o update_time.o \
          output_amr.o flag_utils.o physical_boundaries.o virtual_boundaries.o refine_utils.o nbors_utils.o \
-         hilbert.o load_balance.o title.o sort.o cooling_fine.o units.o light_cone.o #movie.o 
+         hilbert.o load_balance.o title.o sort.o cooling_fine.o units.o light_cone.o movie.o pristine_update.o
 # Particle-Mesh objects
 PMOBJ = init_part.o output_part.o rho_fine.o synchro_fine.o move_fine.o newdt_fine.o particle_tree.o \
         add_list.o remove_list.o star_formation.o sink_particle.o feedback.o clump_finder.o clump_merger.o \

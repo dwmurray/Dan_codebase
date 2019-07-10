@@ -8,7 +8,7 @@ NPRE = 8
 NVAR = 8
 NENER = 0
 SOLVER = hydro
-PATCH = ../patch/hydro/sink_dan
+PATCH = ../patch/hydro/sink
 EXEC = ramses
 #############################################################################
 GITBRANCH = $(shell git rev-parse --abbrev-ref HEAD)
@@ -57,9 +57,14 @@ DEFINES = -DNVECTOR=$(NVECTOR) -DNDIM=$(NDIM) -DNPRE=$(NPRE) -DNENER=$(NENER) -D
 
 # --- MPI, ifort syntax ------------------------------
 F90 = mpif90
-FFLAGS = -cpp -xHOST -traceback -g -O2 -ip $(DEFINES) -DNOSYSTEM
-F90 = mpiifort
-FFLAGS = -cpp -xHOST -traceback -g -O2 -ip $(DEFINES) -DNOSYSTEM
+# This should build a fat binary that works on KNL and SKX
+# -axCORE-AVX512,MIC-AVX512
+FFLAGS = -O3 -xCORE-AVX2 -axCORE-AVX512,MIC-AVX512 -cpp $(DEFINES) -DNOSYSTEM
+
+#F90 = mpif90
+#FFLAGS = -cpp -xHOST -traceback -g -O2 -ip $(DEFINES) -DNOSYSTEM
+#F90 = mpiifort
+#FFLAGS = -cpp -xHOST -traceback -g -O2 -ip $(DEFINES) -DNOSYSTEM
 
 # --- MPI, ifort syntax, additional checks -----------
 #F90 = mpif90
