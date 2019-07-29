@@ -90,7 +90,7 @@ subroutine backup_hydro(filename)
                  xdp(i)=(gamma-1d0)*xdp(i)
               end do
               write(ilun)xdp
-              write(*,*) 'end do loop: Xdp',xdp
+              !write(*,*) 'end do loop: Xdp',xdp
               !write(*,*)'Internal Energy Output_:', xdp(1),xdp(10),xdp(11),ncache !DWM
 #if NVAR>NDIM+2+NENER
               ! Write passive scalars

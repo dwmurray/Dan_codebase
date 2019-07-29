@@ -260,7 +260,7 @@ subroutine add_stir_source_terms(ilevel)
   if(numbtot(1,ilevel)==0)return
   if(verbose)write(*,111)ilevel
 
-  write(*,*)'iax is', nvar-stir_nvar+1
+!  write(*,*)'iax is', nvar-stir_nvar+1 !DWM
 
   ! Add stirsource term at time t with half time step
   do ind=1,twotondim
@@ -285,8 +285,8 @@ subroutine add_stir_source_terms(ilevel)
         end if
         e_kin=0.5*d*(u**2+v**2+w**2)
         !DWM checking values
-        write(*,*)'Stir Source. rho: ', d, 'u,v,w:', u,v,w, &
-             'accel ax,ay,az', ax,ay,az, 'e_kin', e_kin, 'unew(,5): ', unew(ind_cell, 5) !DWM
+!        write(*,*)'Stir Source. rho: ', d, 'u,v,w:', u,v,w, &
+!             'accel ax,ay,az', ax,ay,az, 'e_kin', e_kin, 'unew(,5): ', unew(ind_cell, 5) !DWM
         e_prim=unew(ind_cell,ndim+2)-e_kin
         d_old=max(uold(ind_cell,1),smallr)
         fact=d_old/d*0.5*dtnew(ilevel)
@@ -304,8 +304,8 @@ subroutine add_stir_source_terms(ilevel)
         endif
         e_kin=0.5*d*(u**2+v**2+w**2)
         unew(ind_cell,ndim+2)=e_prim+e_kin
-        write(*,*)'Stir Source End. rho: ', d, 'u,v,w:', u,v,w, &
-             'accel ax,ay,az', ax,ay,az, 'ekin', e_kin,'unew(,5): ', unew(ind_cell, 5) !DWM
+!        write(*,*)'Stir Source End. rho: ', d, 'u,v,w:', u,v,w, &
+!             'accel ax,ay,az', ax,ay,az, 'ekin', e_kin,'unew(,5): ', unew(ind_cell, 5) !DWM
      end do
   end do
 

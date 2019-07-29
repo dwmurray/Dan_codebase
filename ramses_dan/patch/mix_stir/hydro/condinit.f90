@@ -154,7 +154,7 @@ subroutine condinit(x,u,dx,nn)
 !     write(*,*) 'U11',u(ivar,11),ivar
 !     write(*,*) 'U12',u(ivar,12),ivar
 !x  end do
-     write(*,*) 'U5',u(5,5)
+!     write(*,*) 'U5',u(5,5)
 end subroutine condinit
 
 ! DWM 05/2019 Stir_init_k_space
