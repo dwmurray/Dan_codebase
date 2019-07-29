@@ -29,6 +29,8 @@ subroutine condinit(x,u,dx,nn)
   real(dp)::lambda,k,rho1,p1,v1!,b1,xx,yy,zz,theta!,expz,v2,xp,yp,zp,expp,v3 !Starting to try to remove vars
   real(dp),dimension(1:nvector,3)::acc
   real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
+  ! DWM Creating a box.
+  real(dp),dimension(1:ndim):: box_center, xFromCenter
 
   ! Call built-in initial condition generator
   call region_condinit(x,q,dx,nn)
@@ -73,6 +75,29 @@ subroutine condinit(x,u,dx,nn)
      q(i,iax)=acc(i,1)
      q(i,iay)=acc(i,2)
      q(i,iaz)=acc(i,3)
+     !DWM will begin by attempting a polluted cube of size 0.1*boxlen
+     !Centered in the middle of the box.
+     box_center(:)=0.5*boxlen
+     xFromCenter(:) = x(i,:)-box_center(:)
+     if( xFromCenter(:) .le. 0.1*box_len) then
+        !make polluted fraction be 0.9 to check.
+        q(i,7)=0.1 ! DWM Fix the hardc0de! looking for ivar=pristine (ivar=7)
+        write(*,*) 'xFromCenter(1,:)', xFromCenter(1,:)
+        write(*,*) 'xFromCenter(2,:)', xFromCenter(2,:)
+        write(*,*) 'xFromCenter(3,:)', xFromCenter(3,:)
+     end if
+     !DWM Test Zone for a sphere.
+!     xFromCenter(:) = x(i,:)-box_center(:)
+!     rFromCenter = sqrt(sum(xFromCenter*xFromCenter))
+!     test_radius= !Determine Volume sweep required.
+!     if( rFromCenter .le. 0.1*test_radius) then 
+!        normalization = exp(-(rFromCenter/test_radius)**2)
+!        q(i,7)=0.1f
+!        q(i,id)=q(i,id) + test_rho*normalization
+!        q(i,2:4) = test_spin*cross(zAxis,xFromCenter)/scale_v * normalization
+!        q(i,ip)=q(i,id)*T2_star/(scale_v*scale_v)/gamma
+!     end if
+
   end do
 !  if(verbose)write(*,*) 'Printing after add stir q(1,i):'
 !  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
