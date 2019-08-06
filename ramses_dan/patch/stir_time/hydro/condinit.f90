@@ -79,10 +79,14 @@ subroutine condinit(x,u,dx,nn)
      !Centered in the middle of the box.
      box_center(:)=0.5*boxlen
      xFromCenter(:) = x(i,:)-box_center(:)
-     if( xFromCenter(:) .le. 0.1*boxlen) then
+     if( xFromCenter(1) .le. 0.1*boxlen) then !within x?
+        if( xFromCenter(2) .le. 0.1*boxlen) then !y?
+           if( xFromCenter(3) .le. 0.1*boxlen) then !z?
         !make polluted fraction be 0.9 to check.
-        q(i,7)=0.1 ! DWM Fix the hardc0de! looking for ivar=pristine (ivar=7)
-        write(*,*) 'xFromCenter(1)', xFromCenter(:)
+              q(i,7)=0.1 ! DWM Fix the hardc0de! looking for ivar=pristine (ivar=7)
+              write(*,*) 'o.1*boxlen, xFromCenter(:)', 0.1*boxlen, xFromCenter(:)
+           end if
+        end if
      end if
      !DWM Test Zone for a sphere.
 !     xFromCenter(:) = x(i,:)-box_center(:)
