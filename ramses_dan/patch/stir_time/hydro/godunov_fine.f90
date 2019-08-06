@@ -255,7 +255,10 @@ subroutine add_stir_source_terms(ilevel)
   integer::i,ivar,ind,iskip,nx_loc,ind_cell
   real(dp)::d,u,v,w,e_kin,e_prim,d_old,fact
   real(dp)::ax,ay,az
+  !DWM
   integer::iax,iay,iaz
+  real(dp),dimension(1:nvector,1:ndim)::x ! Cell center position.
+  real(dp),dimension(1:nvector,3)::acc !accel vector
 
   if(numbtot(1,ilevel)==0)return
   if(verbose)write(*,111)ilevel
