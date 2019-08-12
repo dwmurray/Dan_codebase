@@ -78,15 +78,15 @@ subroutine condinit(x,u,dx,nn)
      !DWM will begin by attempting a polluted cube of size 0.1*boxlen
      !Centered in the middle of the box.
      box_center(:)=0.5*boxlen !boxlen=1.0 (code units) !x is in cm
-     write(*,*) 'box_center: ', box_center
+     !write(*,*) 'box_center: ', box_center
      xFromCenter(:) = abs(x(i,:)-box_center(:)) !just care about distance from center.
      !radius = 0.1*boxlen
-     write(*,*) 'o.1*boxlen, xFromCenter(:)', 0.1*boxlen, xFromCenter(:)
+     !write(*,*) 'o.1*boxlen, xFromCenter(:)', 0.1*boxlen, xFromCenter(:)
      if( xFromCenter(1) .le. 0.1*boxlen) then
         if( xFromCenter(2) .le. 0.1*boxlen) then
            if( xFromCenter(3) .le. 0.1*boxlen) then
               !make polluted fraction be 0.9 to check.
-              q(i,7)=0.1 ! DWM Fix the hardc0de! looking for ivar=pristine (ivar=7)
+              q(i,7)=0.1 ! looking for ivar=pristine (ivar=7)
            end if
         end if
      end if
@@ -183,7 +183,7 @@ subroutine condinit(x,u,dx,nn)
 !     write(*,*) 'U11',u(ivar,11),ivar
 !     write(*,*) 'U12',u(ivar,12),ivar
 !x  end do
-     write(*,*) 'U5',u(5,5)
+!     write(*,*) 'U5',u(5,5)
 end subroutine condinit
 
 ! DWM 05/2019 Stir_init_k_space
