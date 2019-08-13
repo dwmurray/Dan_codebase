@@ -510,7 +510,7 @@ subroutine region_condinit(x,q,dx,nn)
   q(1:nn,ndim+2)=smallr*smallc**2/gamma ! Setting Pressure here
 
 #if NVAR > NDIM + 2
-  do ivar=ndim+3,nvar !DWM -3 to remove stirring vars
+  do ivar=ndim+3,nvar !DWM
      q(1:nn,ivar)=0.0d0
      if(verbose)write(*,*) 'setting ndim+3 - nvar:', ivar, q(nn,ivar) !DWM tracking down ivars
      ! Rick Sarmento - Handle the new pristine gas

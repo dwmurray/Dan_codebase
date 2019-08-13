@@ -255,20 +255,12 @@ subroutine add_stir_source_terms(ilevel)
   integer::i,ivar,ind,iskip,nx_loc,ind_cell
   real(dp)::d,u,v,w,e_kin,e_prim,d_old,fact
   real(dp)::ax,ay,az
-  !DWM
   integer::iax,iay,iaz
-  real(dp),dimension(1:nvector,1:ndim)::x ! Cell center position.
-  real(dp),dimension(1:nvector,3)::acc !accel vector
 
   if(numbtot(1,ilevel)==0)return
   if(verbose)write(*,111)ilevel
 
-  !DWM modifying to replace the stir accel field randomly every call, should be 1/timestep
-!  call stir_acc_field(x,acc)
-!  iax=acc(i,1)
-!  iay=acc(i,2)
-!  iaz=acc(i,3)
-!  write(*,*)'iax is', nvar-stir_nvar+1
+!  write(*,*)'iax is', nvar-stir_nvar+1 !DWM
 
   ! Add stirsource term at time t with half time step
   do ind=1,twotondim

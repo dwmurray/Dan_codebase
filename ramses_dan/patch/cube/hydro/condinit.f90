@@ -32,6 +32,7 @@ subroutine condinit(x,u,dx,nn)
   ! DWM Creating a box.
   real(dp),dimension(1:ndim):: box_center, xFromCenter
 
+
   ! Call built-in initial condition generator
   call region_condinit(x,q,dx,nn)
 
@@ -47,21 +48,7 @@ subroutine condinit(x,u,dx,nn)
   id=1; iu=2; iv=3; iw=4; ip=5; iax=10; iay=11; iaz=12; ! Hardcoded for 3D!! DWM iax-iaz = 10, 11 ,12 b/c Rick mods
   rho1=d_region(1)
   v1=0d0
-  p1=rho1*T2_star/(scale_v*scale_v)! /gamma !DWM believe this /gamma does not belong.
-!  write (*,*),'rho1',rho1
-!  write (*,*),'T2_star',T2_star
-!  write (*,*),'scale_v',scale_v
-!  write (*,*), 'scale_t', scale_t
-!  write (*,*),'gamma',gamma
-!  write (*,*), 'Pressure p1',p1
-  
-  !theta=0.4 !DWM Double check this. I think it may be a leftover phil never got rid of
-  !write(*,*) T2_star, gamma
-!  if(verbose)write(*,*) 'Printing Prior to stir q(1,i):'
-!  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
-
-!  if(verbose)write(*,*) 'rho1, v1, T2_star, gamma, p1:'
-!  if(verbose)write(*,*) rho1, v1, T2_star, gamma, p1 !DWM
+  p1=rho1*T2_star/(scale_v*scale_v)
   do i=1,nn
      q(i,id)=rho1
 
@@ -78,10 +65,7 @@ subroutine condinit(x,u,dx,nn)
      !DWM will begin by attempting a polluted cube of size 0.1*boxlen
      !Centered in the middle of the box.
      box_center(:)=0.5*boxlen !boxlen=1.0 (code units) !x is in cm
-     !write(*,*) 'box_center: ', box_center
      xFromCenter(:) = abs(x(i,:)-box_center(:)) !just care about distance from center.
-     !radius = 0.1*boxlen
-     !write(*,*) 'o.1*boxlen, xFromCenter(:)', 0.1*boxlen, xFromCenter(:)
      if( xFromCenter(1) .le. 0.1*boxlen) then
         if( xFromCenter(2) .le. 0.1*boxlen) then
            if( xFromCenter(3) .le. 0.1*boxlen) then
@@ -90,18 +74,7 @@ subroutine condinit(x,u,dx,nn)
            end if
         end if
      end if
-     !DWM Test Zone for a sphere.
-!     xFromCenter(:) = x(i,:)-box_center(:)
-!     rFromCenter = sqrt(sum(xFromCenter*xFromCenter))
-!     test_radius= !Determine Volume sweep required.
-!     if( rFromCenter .le. 0.1*test_radius) then 
-!        normalization = exp(-(rFromCenter/test_radius)**2)
-!        q(i,7)=0.1f
-!        q(i,id)=q(i,id) + test_rho*normalization
-!        q(i,2:4) = test_spin*cross(zAxis,xFromCenter)/scale_v * normalization
-!        q(i,ip)=q(i,id)*T2_star/(scale_v*scale_v)/gamma
-!     end if
-
+     !DWM TODO Test Zone for a sphere next.
   end do
 !  if(verbose)write(*,*) 'Printing after add stir q(1,i):'
 !  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
