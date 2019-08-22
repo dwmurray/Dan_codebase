@@ -157,10 +157,10 @@ recursive subroutine amr_step(ilevel,icount)
      ! Stir Acceleration field !DWM
      !---------------------------------------------------
      ! Update turbulent stirring Acceleration field
-!     if(stir)then
+     if(stir)then
         !Create a new subroutine for this call, no need to pass arguements.
-!        call stir_sub_routine
-!     end if
+        call stir_update
+     end if
 
      !----------------------------------------------------
      ! Kinetic feedback from giant molecular clouds

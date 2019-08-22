@@ -1,5 +1,64 @@
-!Subroutines setting up and creating the stir accel field.
+!###########################################################
+! This subroutine is called every coarse step
+!DWM - Aug 2019
+!###########################################################
+subroutine stir_update
+!  use stir_parameters
+!  use hydro_commons
+!  use amr_commons
+  integer::ilevel
+  integer::i,ngrid
+  integer,dimension(1:nvector),save::ind_grid
 
+  integer::nn ! Number of Cells
+  integer::ivar
+  real(dp),dimension(1:nvector,1:ndim)::x ! Cell center position
+  real(dp),dimension(1:nvector,3)::acc
+
+  call stir_initialize_k_space !need to modify srand(stir_seed) each call.
+  call stir_acc_field(x,acc) !returns acc
+! need to modify either uold or unew(iax,iay,iaz)
+
+  ! See amr_commons for definition of 'active'
+  ! active%igrid is array of ptrs to grids
+  ! ------------------------------------------------------------------
+  ! The outer loop, we look over all levels... 
+  ! For each grid, get the indices of the active grids at that level
+  ! Loop over levels
+  do ilevel=levelmin,nlevelmax
+     do ind=1, twotondim
+        iskip=ncoarse+(ind-1)*ngridmax
+        ncache=active(ilevel)%ngrid ! active%ngrid field is number of grids - each grid can have 8 octs (cells)
+        do i=1,ncache
+           ind_cell=active(ilevel)%igrid(i)+iskip
+           d=max(unew(ind_cell,1),smallr)
+           u=0.0; v=0.0; w=0.0
+           ax=0.0; ay=0.0; az=0.0
+           iax=nvar-stir_nvar+1; iay=iax+1; iaz=iay+1
+           if(ndim>0) then
+              u=unew(ind_cell,2)/d
+              ax=unew(ind_cell,iax)/d
+           end if
+           if(ndim>1) then
+              v=unew(ind_cell,3)/d
+              ay=unew(ind_cell,iay)/d
+           end if
+           if(ndim>2) then
+              w=unew(ind_cell,4)/d
+              az=unew(ind_cell,iaz)/d
+           end if
+        
+           if(ndim>0)then
+              unew(ind_cell,iax)=d*acc(ind_cell,1)
+           end if
+        end do
+     end do
+  end do
+
+  write(*,*) 'Called to stir update'
+end subroutine stir_update
+
+!Subroutines setting up and creating the stir accel field.
 ! DWM 05/2019 Stir_init_k_space
 subroutine stir_initialize_k_space 
   use stir_parameters
@@ -46,7 +105,6 @@ subroutine stir_initialize_k_space
         end do
      end do
   end do
-  !DWM My impression is I'll have to turn this flag off.
   stir_initialize = .true.
   return
 end subroutine stir_initialize_k_space
