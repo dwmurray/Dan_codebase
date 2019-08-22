@@ -113,7 +113,7 @@ HYDROOBJ = init_hydro.o init_flow_fine.o write_screen.o output_hydro.o courant_f
            uplmde.o umuscl.o interpol_hydro.o godunov_utils.o condinit.o hydro_flag.o hydro_boundary.o \
            boundana.o read_hydro_params.o synchro_hydro_fine.o
 # Stir Objects !DWM 05/2019
-STIROBJ = stir_parameters.o read_stir_params.o
+STIROBJ = stir_parameters.o read_stir_params.o stir_update.o # !DWM added stirupdate
 # All objects
 AMRLIB = $(AMROBJ) $(STIROBJ) $(HYDROOBJ) $(PMOBJ) $(POISSONOBJ)
 # ATON objects

@@ -158,6 +158,7 @@ recursive subroutine amr_step(ilevel,icount)
      !---------------------------------------------------
      ! Update turbulent stirring Acceleration field
      if(stir)then
+        !Create a new subroutine for this call, no need to pass arguements.
         call stir_acc_field(x,acc)
      end if
 
