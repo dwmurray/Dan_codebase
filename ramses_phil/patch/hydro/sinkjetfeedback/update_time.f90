@@ -75,6 +75,7 @@ subroutine update_time(ilevel)
            ! Output mass and energy conservation to screen
            !----------------------------------------------
            if(cooling.or.pressure_fix)then
+              !DWM scaled to cgs units
               write(*,778)nstep_coarse,econs*scale_ener,epot_tot*scale_ener,ekin_tot*scale_ener,eint_tot*scale_ener
            else
               write(*,777)nstep_coarse,econs*scale_ener,epot_tot*scale_ener,ekin_tot*scale_ener,eint_tot*scale_ener
