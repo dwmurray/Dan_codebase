@@ -1,6 +1,5 @@
 !Subroutines setting up and creating the stir accel field.
 
-
 ! DWM 05/2019 Stir_init_k_space
 subroutine stir_initialize_k_space 
   use stir_parameters

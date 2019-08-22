@@ -260,13 +260,12 @@ subroutine add_stir_source_terms(ilevel)
   if(numbtot(1,ilevel)==0)return
   if(verbose)write(*,111)ilevel
 
-  !DWM modifying to replace the stir accel field randomly every call, should be 1/timestep
-!  call stir_acc_field(x,acc)
+  !DWM modifying to replace the stir accel field randomly every coarse call
 !  iax=acc(i,1)=nvar-stir_nvar+1
 !  iay=acc(i,2)=iax+1
 !  iaz=acc(i,3)=iay+1
 
-  write(*,*)'iax is', nvar-stir_nvar+1 !DWM
+!  write(*,*)'iax is', unew(ind_cell,nvar-stir_nvar+1) !DWM
 
   ! Add stirsource term at time t with half time step
   do ind=1,twotondim
