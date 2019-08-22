@@ -152,6 +152,15 @@ recursive subroutine amr_step(ilevel,icount)
   ! Put here all stuffs that are done only at coarse time step
   !-----------------------------------------------------------
   if(ilevel==levelmin)then
+
+     !---------------------------------------------------
+     ! Stir Acceleration field !DWM
+     !---------------------------------------------------
+     ! Update turbulent stirring Acceleration field
+     if(stir)then
+        call stir_acc_field(x,acc)
+     end if
+
      !----------------------------------------------------
      ! Kinetic feedback from giant molecular clouds
      !----------------------------------------------------

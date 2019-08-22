@@ -205,7 +205,7 @@ subroutine stir_initialize_k_space
         end do
      end do
   end do
-
+  !DWM My impression is I'll have to turn this flag off.
   stir_initialize = .true.
   return
 end subroutine stir_initialize_k_space
