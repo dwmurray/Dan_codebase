@@ -141,6 +141,11 @@ subroutine set_uold(ilevel)
   ! DWM 05/2019 Added stirring
   ! Add turbulent stirring terms
   if(stir)then
+     ! DWM call to update the stir accel field randomly every coarse call
+     ! Then call to add the source terms on that ilevel 
+     !if(ilevel==levelmin) then
+        ! call update_stir_k_field
+     !end if
      call add_stir_source_terms(ilevel)
   end if
 
@@ -260,12 +265,6 @@ subroutine add_stir_source_terms(ilevel)
   if(numbtot(1,ilevel)==0)return
   if(verbose)write(*,111)ilevel
 
-  !DWM modifying to replace the stir accel field randomly every coarse call
-!  iax=acc(i,1)=nvar-stir_nvar+1
-!  iay=acc(i,2)=iax+1
-!  iaz=acc(i,3)=iay+1
-
-!  write(*,*)'iax is', unew(ind_cell,nvar-stir_nvar+1) !DWM
 
   ! Add stirsource term at time t with half time step
   do ind=1,twotondim
