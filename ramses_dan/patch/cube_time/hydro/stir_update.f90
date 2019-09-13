@@ -12,14 +12,10 @@ subroutine stir_update
   ! This subroutine is called every coarse step
   ! DWM - Aug 2019
   !###########################################################
-
+  ! All of stirring ASSUMES! that it is the last three passive scalars.
   iax=nvar-stir_nvar+1; iay=iax+1; iaz=iay+1
 
-  if( .not. stir_initialized) then
-     if(verbose)write(*,*)'Initializing Stir k-space'
-     call stir_initialize_k_space
-  end if
-
+  ! Stir_acc_field does check to see that acc has been init.
   call stir_acc_field(x,acc) !returns acc
 ! Next need to modify either uold or unew(iax,iay,iaz)
 
@@ -65,61 +61,60 @@ end subroutine stir_update
 
 !Subroutines setting up and creating the stir accel field.
 ! DWM 05/2019 Stir_init_k_space
-subroutine stir_initialize_k_space 
-  use stir_parameters
-  use ifport
-  integer::i,j,k
-  real(dp),parameter::twopi=6.2823d0
-  real(dp)::total,norm,kvec
-  real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
-
-  ! Conversion factor from user units to cgs units
-  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
-  !==============================================================
-  ! This routine initializes the k vector space for stirring turbulence
-  ! Using a user defined stir_seed
-  !==============================================================
-
-  do i=1,nstir
-     stir_kx(i) = 1D0*twopi*(i-1)/boxlen
-     stir_ky(i) = 1D0*twopi*(i-1)/boxlen
-     stir_kz(i) = 1D0*twopi*(i-1)/boxlen
-  end do
-
-  call srand(stir_seed)
-
-  do i=1,nstir
-     do j=1,nstir
-        do k=1,nstir
-           stir_amp_x(i,j,k) = rand()
-           stir_amp_y(i,j,k) = rand()
-           stir_amp_z(i,j,k) = rand()
-           stir_phi_x(i,j,k) = rand()*twopi
-           stir_phi_y(i,j,k) = rand()*twopi
-           stir_phi_z(i,j,k) = rand()*twopi
-
-           total = sqrt(stir_amp_x(i,j,k)**2 + stir_amp_y(i,j,k)**2 + stir_amp_z(i,j,k)**2)
-           kvec = sqrt(stir_kx(i)**2 + stir_ky(j)**2 + stir_kz(k)**2)
-           norm = 1d0*stir_norm*stir_norm/(scale_v*scale_v)*(kvec/(twopi/boxlen))**stir_index  
-           if(kvec < twopi/boxlen*stir_kmin .or. kvec > twopi/boxlen*stir_kmax) norm = 0D0
-           !if(kvec <= twopi/boxlen*2D0) write(*,*) kvec/(twopi/boxlen), norm
-
-           stir_amp_x(i,j,k) = norm*stir_amp_x(i,j,k)/total
-           stir_amp_y(i,j,k) = norm*stir_amp_y(i,j,k)/total
-           stir_amp_z(i,j,k) = norm*stir_amp_z(i,j,k)/total
-
-        end do
-     end do
-  end do
-  stir_initialize = .true.
-  return
-end subroutine stir_initialize_k_space
-
-  
-subroutine stir_update_k_space
+!subroutine stir_initialize_k_space 
+!  use stir_parameters
+!  use ifport
+!  integer::i,j,k
+!  real(dp),parameter::twopi=6.2823d0
+!  real(dp)::total,norm,kvec
+!  real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
+!
+!  !==============================================================
+!  ! This routine initializes the k vector space for stirring turbulence
+!  ! Using a user defined stir_seed
+!  !==============================================================
+!  ! Conversion factor from user units to cgs units
+!  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
+!
+!  do i=1,nstir
+!     stir_kx(i) = 1D0*twopi*(i-1)/boxlen
+!     stir_ky(i) = 1D0*twopi*(i-1)/boxlen
+!     stir_kz(i) = 1D0*twopi*(i-1)/boxlen
+!  end do
+!
+!  call srand(stir_seed)
+!
+!  do i=1,nstir
+!     do j=1,nstir
+!        do k=1,nstir
+!           stir_amp_x(i,j,k) = rand()
+!           stir_amp_y(i,j,k) = rand()
+!           stir_amp_z(i,j,k) = rand()
+!           stir_phi_x(i,j,k) = rand()*twopi
+!           stir_phi_y(i,j,k) = rand()*twopi
+!           stir_phi_z(i,j,k) = rand()*twopi
+!
+!           total = sqrt(stir_amp_x(i,j,k)**2 + stir_amp_y(i,j,k)**2 + stir_amp_z(i,j,k)**2)
+!           kvec = sqrt(stir_kx(i)**2 + stir_ky(j)**2 + stir_kz(k)**2)
+!           norm = 1d0*stir_norm*stir_norm/(scale_v*scale_v)*(kvec/(twopi/boxlen))**stir_index  
+!           if(kvec < twopi/boxlen*stir_kmin .or. kvec > twopi/boxlen*stir_kmax) norm = 0D0
+!           !if(kvec <= twopi/boxlen*2D0) write(*,*) kvec/(twopi/boxlen), norm
+!
+!           stir_amp_x(i,j,k) = norm*stir_amp_x(i,j,k)/total
+!           stir_amp_y(i,j,k) = norm*stir_amp_y(i,j,k)/total
+!           stir_amp_z(i,j,k) = norm*stir_amp_z(i,j,k)/total
+!
+!        end do
+!     end do
+!  end do
+!  stir_initialize = .true.
+!  return
+!end subroutine stir_initialize_k_space
+!
+subroutine stir_update_k_space(seed_value)
   use amr_parameters, only : nvector,ndim
   use stir_parameters
-  use ifport
+!  use ifport
   implicit none
   integer::i,j,k
   integer::rand_seed
@@ -128,22 +123,20 @@ subroutine stir_update_k_space
   real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
   logical::stir_initialize
 
-  ! Conversion factor from user units to cgs units
-  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
   !==============================================================
   ! This routine uses a random seed to init the k vector space for stirring turbulence
   ! It returns
   !==============================================================
+  ! Conversion factor from user units to cgs units
+  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
 
   do i=1,nstir
      stir_kx(i) = 1D0*twopi*(i-1)/boxlen
      stir_ky(i) = 1D0*twopi*(i-1)/boxlen
      stir_kz(i) = 1D0*twopi*(i-1)/boxlen
   end do
-  write(*,*) 'rand_seed value: ', rand_seed
-  rand_seed = rand()
-  call srand(rand_seed)
-  write(*,*) 'New rand_seed value: ', rand_seed
+  write(*,*) 'Current Seed value: ', seed_value
+  call srand(seed_value)
   do i=1,nstir
      do j=1,nstir
         do k=1,nstir
@@ -167,7 +160,6 @@ subroutine stir_update_k_space
         end do
      end do
   end do
-  stir_initialize = .true.
   write(*,*) 'stir_amp_x(1,1,1)', stir_amp_x(1,1,1)
   return
 end subroutine stir_update_k_space
@@ -187,10 +179,13 @@ subroutine stir_acc_field(x,acc)
 
   if( .not. stir_initialized) then
      if(verbose)write(*,*)'Initializing Stir k-space'
-     call stir_initialize_k_space
+     call stir_update_k_space(stir_seed)
+     !call stir_initialize_k_space
   else
-     write(*,*) 'Stir was Init, now updating.'
-     call stir_update_k_space
+     write(*,*) 'Stir acc field is now updating.'
+     rand_seed = rand()
+     write(*,*) 'random new seed', rand_seed
+     call stir_update_k_space(rand_seed)
   end if
   acc = 0D0
   do i = 1,nstir  
