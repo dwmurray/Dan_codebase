@@ -153,19 +153,22 @@ recursive subroutine amr_step(ilevel,icount)
   !-----------------------------------------------------------
   if(ilevel==levelmin)then
 
+     !----------------------------------------------------
+     ! Kinetic feedback from giant molecular clouds
+     !----------------------------------------------------
+     if(hydro.and.star.and.eta_sn>0.and.f_w>0)call kinetic_feedback
+
      !---------------------------------------------------
      ! Stir Acceleration field !DWM
      !---------------------------------------------------
      ! Update turbulent stirring Acceleration field
      if(stir)then
-        !Create a new subroutine for this call, no need to pass arguements.
+        ! Need a timestep condition before the call.
+        ! Stir_update refreshes the seed for srand() and then
+        ! proceeds to create a new accl field and replaces those
+        ! values in !IN WHAT? unew? uold? decide.
         call stir_update
      end if
-
-     !----------------------------------------------------
-     ! Kinetic feedback from giant molecular clouds
-     !----------------------------------------------------
-     if(hydro.and.star.and.eta_sn>0.and.f_w>0)call kinetic_feedback
 
      !----------------------------------------------------
      ! Update the pristine gas fraction
