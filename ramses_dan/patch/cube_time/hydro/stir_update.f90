@@ -1,132 +1,130 @@
 subroutine stir_update
   use stir_parameters
   use hydro_parameters
-!  use amr_commons
+  use hydro_commons ! We only touch Uold.
   implicit none
-  integer::ilevel ! Refinement level
+  integer::ilevel, ivar, acc_var
   integer::nn ! Number of Cells
-  integer::ivar, iax, iay, iaz
+  integer::iax, iay, iaz !accelerations
+  integer::i,igrid,ncache,iskip,ngrid
+  integer::ind,idim,ix,iy,iz,nx_loc
+  real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
+  real(dp)::dx,scale,dx_loc
+  integer ,dimension(1:nvector)::ind_grid,ind_cell
   real(dp),dimension(1:nvector,1:ndim)::x ! Cell center position
   real(dp),dimension(1:nvector,3)::acc  
+  real(dp),dimension(1:3)::skip_loc
+  real(dp),dimension(1:twotondim,1:3)::xc
   !###########################################################
   ! This subroutine is called every coarse step
   ! DWM - Aug 2019
   !###########################################################
+
+  !First check if we even need to update at this time.
+  write(*,*) 't', t / 3.14D7, 'stir_timescale', stir_timescale(stir_tout)/3.14D7 !visual check
+  if (t<stir_timescale(stir_tout))then
+     return
+  else
+     stir_tout = stir_tout + 1 !
+  end if
+
   ! All of stirring ASSUMES! that it is the last three passive scalars.
   iax=nvar-stir_nvar+1; iay=iax+1; iaz=iay+1
+  
+  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2) 
 
-  ! Stir_acc_field does check to see that acc has been init.
-  call stir_acc_field(x,acc) !returns acc
-! Next need to modify either uold or unew(iax,iay,iaz)
+  do ilevel=levelmin,nlevelmax !Loop through all levels
+     if(verbose)write(*,111)ilevel
+     ! Local constants
+     skip_loc=(/0.0d0,0.0d0,0.0d0/)
+     if(ndim>0)skip_loc(1)=dble(icoarse_min)
+     if(ndim>1)skip_loc(2)=dble(jcoarse_min)
+     if(ndim>2)skip_loc(3)=dble(kcoarse_min)
+     ! Mesh size at level ilevel in coarse cell units
+     dx=0.5D0**ilevel
+     nx_loc=(icoarse_max-icoarse_min+1)
+     scale=boxlen/dble(nx_loc)
+     dx_loc=dx*scale
+     ncache=active(ilevel)%ngrid
 
-  ! See amr_commons for definition of 'active'
-  ! active%igrid is array of ptrs to grids
-  ! ------------------------------------------------------------------
-  ! The outer loop, we look over all levels... 
-  ! For each grid, get the indices of the active grids at that level
+     ! Set position of cell centers relative to grid center
+     do ind=1,twotondim
+        iz=(ind-1)/4
+        iy=(ind-1-4*iz)/2
+        ix=(ind-1-2*iy-4*iz)
+        if(ndim>0)xc(ind,1)=(dble(ix)-0.5D0)*dx
+        if(ndim>1)xc(ind,2)=(dble(iy)-0.5D0)*dx
+        if(ndim>2)xc(ind,3)=(dble(iz)-0.5D0)*dx
+     end do
+     ! Loop over grids by vector sweeps
+     do igrid=1,ncache,nvector
+        ngrid=MIN(nvector,ncache-igrid+1)
+        do i=1,ngrid
+           ind_grid(i)=active(ilevel)%igrid(igrid+i-1)
+        end do
+        ! Loop over cells
+        do ind=1,twotondim
+           ! Gather cell indices
+           iskip=ncoarse+(ind-1)*ngridmax
+           do i=1,ngrid
+              ind_cell(i)=iskip+ind_grid(i)
+           end do
+           ! Gather cell centre positions
+           do idim=1,ndim
+              do i=1,ngrid
+                 x(i,idim)=xg(ind_grid(i),idim)+xc(ind,idim)
+              end do
+           end do
+           ! Rescale position from code units to user units
+           do idim=1,ndim
+              do i=1,ngrid
+                 x(i,idim)=(x(i,idim)-skip_loc(idim))*scale
+              end do
+           end do
+           call stir_acc_field(x,acc) !returns acc
+           !write(*,*) 'Modded acc(i,x) (i,y) (i,z): ',acc(10,1), acc(10,2), acc(10,3)
+           ! Scatter the updated acc variables
+           do ivar=nvar-stir_nvar+1, nvar ! This loops 10 - 12 for uold.
+              acc_var = 0 !Pick the correct acc index for 
+              if(ivar==iax) acc_var = 1
+#if NDIM>1
+              if(ivar==iay) acc_var = 2
+#endif
+#if NDIM>2
+              if(ivar==iaz) acc_var = 3
+#endif
+              if(acc_var == 0) stop 
+              do i=1,ngrid
+                 ! Recall uold passes everything around weighted by density
+                 uold(ind_cell(i),ivar) = acc(i,acc_var) * uold(ind_cell(i),1) 
+              end do
 
-  ! Loop over levels
-!  do ilevel=levelmin,nlevelmax ! Loop by amr level
-!     ncache=active(ilevel)%ngrid ! active%ngrid field is number of grids - each grid can have 8 octs (cells)
-!     do ind=1, twotondim ! Loop over the dimension
-!        iskip=ncoarse+(ind-1)*ngridmax
-!        do i=1,ncache ! Loop over the cells
-!           ind_cell=active(ilevel)%igrid(i)+iskip !determine index of this cell
-!           !DWM, atm just pulling values to double check.
-!           d=max(unew(ind_cell,1),smallr)
-!           u=0.0; v=0.0; w=0.0
-!           ax=0.0; ay=0.0; az=0.0
-!           if(ndim>0) then
-!              u=unew(ind_cell,2)/d
-!              ax=unew(ind_cell,iax)/d
-!           end if
-!           if(ndim>1) then
-!              v=unew(ind_cell,3)/d
-!              ay=unew(ind_cell,iay)/d
-!           end if
-!           if(ndim>2) then
-!              w=unew(ind_cell,4)/d
-!              az=unew(ind_cell,iaz)/d
-!           end if
-!           write(*,*) 'ax: ', ax, 'ay: ', ay, 'az: ', az
-!!           if(ndim>0)then
-!!              unew(ind_cell,iax)=d*acc(ind_cell,1)
-!!           end if
-!        end do
-!     end do
-!  end do
-!
-  if(verbose) write(*,*) 'Called to stir update'
+           end do
+        end do
+     end do
+  end do
+
+111 format('   Entering Stir Update for level ',I2)
+
 end subroutine stir_update
 
-!Subroutines setting up and creating the stir accel field.
-! DWM 05/2019 Stir_init_k_space
-!subroutine stir_initialize_k_space 
-!  use stir_parameters
-!  use ifport
-!  integer::i,j,k
-!  real(dp),parameter::twopi=6.2823d0
-!  real(dp)::total,norm,kvec
-!  real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
-!
-!  !==============================================================
-!  ! This routine initializes the k vector space for stirring turbulence
-!  ! Using a user defined stir_seed
-!  !==============================================================
-!  ! Conversion factor from user units to cgs units
-!  call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
-!
-!  do i=1,nstir
-!     stir_kx(i) = 1D0*twopi*(i-1)/boxlen
-!     stir_ky(i) = 1D0*twopi*(i-1)/boxlen
-!     stir_kz(i) = 1D0*twopi*(i-1)/boxlen
-!  end do
-!
-!  call srand(stir_seed)
-!
-!  do i=1,nstir
-!     do j=1,nstir
-!        do k=1,nstir
-!           stir_amp_x(i,j,k) = rand()
-!           stir_amp_y(i,j,k) = rand()
-!           stir_amp_z(i,j,k) = rand()
-!           stir_phi_x(i,j,k) = rand()*twopi
-!           stir_phi_y(i,j,k) = rand()*twopi
-!           stir_phi_z(i,j,k) = rand()*twopi
-!
-!           total = sqrt(stir_amp_x(i,j,k)**2 + stir_amp_y(i,j,k)**2 + stir_amp_z(i,j,k)**2)
-!           kvec = sqrt(stir_kx(i)**2 + stir_ky(j)**2 + stir_kz(k)**2)
-!           norm = 1d0*stir_norm*stir_norm/(scale_v*scale_v)*(kvec/(twopi/boxlen))**stir_index  
-!           if(kvec < twopi/boxlen*stir_kmin .or. kvec > twopi/boxlen*stir_kmax) norm = 0D0
-!           !if(kvec <= twopi/boxlen*2D0) write(*,*) kvec/(twopi/boxlen), norm
-!
-!           stir_amp_x(i,j,k) = norm*stir_amp_x(i,j,k)/total
-!           stir_amp_y(i,j,k) = norm*stir_amp_y(i,j,k)/total
-!           stir_amp_z(i,j,k) = norm*stir_amp_z(i,j,k)/total
-!
-!        end do
-!     end do
-!  end do
-!  stir_initialize = .true.
-!  return
-!end subroutine stir_initialize_k_space
-!
 subroutine stir_update_k_space(seed_value)
   use amr_parameters, only : nvector,ndim
   use stir_parameters
-!  use ifport
+  use ifport
   implicit none
   integer::i,j,k
-  integer::rand_seed
+  integer::seed_value
   real(dp),parameter::twopi=6.2823d0
   real(dp)::total,norm,kvec
   real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
   logical::stir_initialize
 
   !==============================================================
-  ! This routine uses a random seed to init the k vector space for stirring turbulence
-  ! It returns
+  ! This routine uses a random seed to init or update the k vector space for stirring turbulence
+  ! It returns stir_amp and stir_k 
   !==============================================================
+  if(verbose) write(*,*) 'Current Seed value: ', seed_value
   ! Conversion factor from user units to cgs units
   call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2)
 
@@ -135,7 +133,7 @@ subroutine stir_update_k_space(seed_value)
      stir_ky(i) = 1D0*twopi*(i-1)/boxlen
      stir_kz(i) = 1D0*twopi*(i-1)/boxlen
   end do
-  write(*,*) 'Current Seed value: ', seed_value
+
   call srand(seed_value)
   do i=1,nstir
      do j=1,nstir
@@ -160,33 +158,40 @@ subroutine stir_update_k_space(seed_value)
         end do
      end do
   end do
-  write(*,*) 'stir_amp_x(1,1,1)', stir_amp_x(1,1,1)
+  stir_initialized = .true.
+  if(verbose) write(*,*) stir_initialized
   return
 end subroutine stir_update_k_space
-
 
 ! DWM 05/2019 subroutine stir_acc_field
 subroutine stir_acc_field(x,acc)
   use amr_parameters, only : nvector,ndim
   use stir_parameters
+  use ifport ! use for rand()
+  implicit none
   real(dp),dimension(1:nvector,1:ndim),intent(IN)::x ! Cell center position.
   real(dp),dimension(1:nvector,1:3),intent(OUT):: acc ! acc
   !==============================================================
   !  This routine generates the stir field for the turbulence
+  !  It also either initializes the field according to a user specified
+  !  seed value, or updates the field via a random seed.
   !==============================================================
   real(dp),dimension(1:nvector)::skx,ckx,sky,cky,skz,ckz,imtrigterms
-  integer::i
+  integer::i,j,k
+  integer:: rand_stir_seed
+  rand_stir_seed = 0
 
   if( .not. stir_initialized) then
-     if(verbose)write(*,*)'Initializing Stir k-space'
-     call stir_update_k_space(stir_seed)
-     !call stir_initialize_k_space
+     if(verbose) write(*,*)'Initializing Stir k-space'
+     call stir_update_k_space(stir_seed) !stir_seed is provided by stir_parameters or user.
   else
-     write(*,*) 'Stir acc field is now updating.'
-     rand_seed = rand()
-     write(*,*) 'random new seed', rand_seed
-     call stir_update_k_space(rand_seed)
+     rand_stir_seed = rand() * 1d6 ! rand() returns a value between 0 - 1 
+                                   ! Thus, convert to user magnitude of 1D5
+     rand_stir_seed = INT(rand_stir_seed) ! Convert to int and make mag same as user supplied.
+     if(verbose) write(*,*) 'New random seed for Stir K-space', rand_stir_seed
+     call stir_update_k_space(rand_stir_seed)
   end if
+  if(verbose) write(*,*) 'Stir Seed, Rand_seed: ', stir_seed, rand_stir_seed
   acc = 0D0
   do i = 1,nstir  
      do j=1,nstir
