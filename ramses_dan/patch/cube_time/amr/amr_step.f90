@@ -163,10 +163,13 @@ recursive subroutine amr_step(ilevel,icount)
      !---------------------------------------------------
      ! Update turbulent stirring Acceleration field
      if(stir)then
-        ! Need a timestep condition before the call.
+        ! We call to stir_update every coarse step, it checks if it needs to update at that t.
+        ! Otherwise to returns without modification.
+        ! This way we don't introduce too much to amr_step.
         ! Stir_update refreshes the seed for srand() and then
-        ! proceeds to create a new accl field and replaces those
-        ! values in !IN WHAT? unew? uold? decide.
+        ! proceeds to create a new accl field
+        ! N.B. Stirring assumes it is the last 3 passive
+        ! scalars and replaces those values in uold.
         call stir_update
      end if
 
