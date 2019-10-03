@@ -1,12 +1,12 @@
 subroutine stir_update
   use stir_parameters
   use hydro_parameters
-  use hydro_commons ! We only touch Uold.
+  use ifport ! use for rand()
+  use hydro_commons, ONLY: uold ! We mod the last three vars in uold.
   implicit none
   integer::ilevel, ivar, acc_var
-  integer::nn ! Number of Cells
   integer::iax, iay, iaz !accelerations
-  integer::i,igrid,ncache,iskip,ngrid
+  integer::i,igrid,ncache,iskip,ngrid !ngrid is number of grids
   integer::ind,idim,ix,iy,iz,nx_loc
   real(dp)::scale_nH,scale_T2,scale_l,scale_d,scale_t,scale_v
   real(dp)::dx,scale,dx_loc
@@ -15,17 +15,50 @@ subroutine stir_update
   real(dp),dimension(1:nvector,3)::acc  
   real(dp),dimension(1:3)::skip_loc
   real(dp),dimension(1:twotondim,1:3)::xc
+  integer:: rand_stir_seed
+  rand_stir_seed = 0
+
   !###########################################################
-  ! This subroutine is called every coarse step
+  ! This subroutine is called by amr/amr_step every coarse step
   ! DWM - Aug 2019
   !###########################################################
 
-  !First check if we even need to update at this time.
-  write(*,*) 't', t / 3.14D7, 'stir_timescale', stir_timescale(stir_tout)/3.14D7 !visual check
-  if (t<stir_timescale(stir_tout))then
+  !Check if we need to update at this time.
+  if (t<stir_timescale(stir_tout))return
+
+  if(myid==1) write(*,89)t,stir_timescale(stir_tout) !visual check
+89 format('t=',1pe12.5,' stir_timescale=',1pe12.5)
+
+  stir_tout = stir_tout + 1 !
+  !Condition to turn off stirring without having to restart run.
+  !Also used to trigger if we want polluted shapes.
+  if(stir_tout > 10) then !Change to user set value, not hardcoded !TODO DWM
+     stir = .false.
+     if(myid==1) then
+        write(*,*) 'System has evolved past user requested time of stirring.'
+        write(*,*) 'Stir flag is now false: ', stir
+     end if
+     ! DWM Implementing Polluted Shapes
+     if( .not. pollute_initialized) then
+        call dump_all
+        if(myid==1) write(*,*) 'Now Implementing the polluted shapes.'
+        call polluted_shapes
+        call dump_all
+     end if
+     !End Polluted block
+     !With stirring now turned off, we simply return.
      return
+  end if
+
+  !Randomize the K space
+  if( .not. stir_initialized) then
+     if(myid==1) write(*,*)'Initializing Stir k-space'
+     call stir_update_k_space(stir_seed) !stir_seed is provided by stir_parameters or user.
   else
-     stir_tout = stir_tout + 1 !
+     ! rand() returns a value between 0 - 1,
+     rand_stir_seed = INT(rand() * 1d6)! Convert to int and make mag same as user supplied.
+     if(myid==1) write(*,*) 'Stir Seed, Rand_seed: ', stir_seed, rand_stir_seed
+     call stir_update_k_space(rand_stir_seed)
   end if
 
   ! All of stirring ASSUMES! that it is the last three passive scalars.
@@ -33,19 +66,9 @@ subroutine stir_update
   
   call units(scale_l,scale_t,scale_d,scale_v,scale_nH,scale_T2) 
 
-  do ilevel=levelmin,nlevelmax !Loop through all levels
-     if(verbose)write(*,111)ilevel
-     ! Local constants
-     skip_loc=(/0.0d0,0.0d0,0.0d0/)
-     if(ndim>0)skip_loc(1)=dble(icoarse_min)
-     if(ndim>1)skip_loc(2)=dble(jcoarse_min)
-     if(ndim>2)skip_loc(3)=dble(kcoarse_min)
+  do ilevel=1,nlevelmax !Loop through all levels
      ! Mesh size at level ilevel in coarse cell units
      dx=0.5D0**ilevel
-     nx_loc=(icoarse_max-icoarse_min+1)
-     scale=boxlen/dble(nx_loc)
-     dx_loc=dx*scale
-     ncache=active(ilevel)%ngrid
 
      ! Set position of cell centers relative to grid center
      do ind=1,twotondim
@@ -56,6 +79,17 @@ subroutine stir_update
         if(ndim>1)xc(ind,2)=(dble(iy)-0.5D0)*dx
         if(ndim>2)xc(ind,3)=(dble(iz)-0.5D0)*dx
      end do
+
+     ! Local constants
+     nx_loc=(icoarse_max-icoarse_min+1)
+     skip_loc=(/0.0d0,0.0d0,0.0d0/)
+     if(ndim>0)skip_loc(1)=dble(icoarse_min)
+     if(ndim>1)skip_loc(2)=dble(jcoarse_min)
+     if(ndim>2)skip_loc(3)=dble(kcoarse_min)
+     scale=boxlen/dble(nx_loc)
+     dx_loc=dx*scale
+     ncache=active(ilevel)%ngrid
+
      ! Loop over grids by vector sweeps
      do igrid=1,ncache,nvector
         ngrid=MIN(nvector,ncache-igrid+1)
@@ -81,28 +115,30 @@ subroutine stir_update
                  x(i,idim)=(x(i,idim)-skip_loc(idim))*scale
               end do
            end do
+           !Now that we have the cell centres in cgs
            call stir_acc_field(x,acc) !returns acc
-           !write(*,*) 'Modded acc(i,x) (i,y) (i,z): ',acc(10,1), acc(10,2), acc(10,3)
-           ! Scatter the updated acc variables
-           do ivar=nvar-stir_nvar+1, nvar ! This loops 10 - 12 for uold.
-              acc_var = 0 !Pick the correct acc index for 
-              if(ivar==iax) acc_var = 1
-#if NDIM>1
-              if(ivar==iay) acc_var = 2
-#endif
-#if NDIM>2
-              if(ivar==iaz) acc_var = 3
-#endif
-              if(acc_var == 0) stop 
-              do i=1,ngrid
+           ! Now implement the updated acc variables
+           do i=1,ngrid
+              do ivar=nvar-stir_nvar+1, nvar ! This loops 10 - 12 for uold.
+                 acc_var = 0 !Pick the correct acc index for 
+                 if(ivar==iax) acc_var = 1
+                 if(ivar==iay) acc_var = 2
+                 if(ivar==iaz) acc_var = 3
+                 if(acc_var == 0)then
+                    write(*,*) 'acc_var is zero, are we stirring?'
+                    call clean_stop
+                 end if
                  ! Recall uold passes everything around weighted by density
                  uold(ind_cell(i),ivar) = acc(i,acc_var) * uold(ind_cell(i),1) 
               end do
-
            end do
         end do
      end do
   end do
+
+
+
+
 
 111 format('   Entering Stir Update for level ',I2)
 
@@ -159,7 +195,6 @@ subroutine stir_update_k_space(seed_value)
      end do
   end do
   stir_initialized = .true.
-  if(verbose) write(*,*) stir_initialized
   return
 end subroutine stir_update_k_space
 
@@ -167,7 +202,6 @@ end subroutine stir_update_k_space
 subroutine stir_acc_field(x,acc)
   use amr_parameters, only : nvector,ndim
   use stir_parameters
-  use ifport ! use for rand()
   implicit none
   real(dp),dimension(1:nvector,1:ndim),intent(IN)::x ! Cell center position.
   real(dp),dimension(1:nvector,1:3),intent(OUT):: acc ! acc
@@ -178,20 +212,12 @@ subroutine stir_acc_field(x,acc)
   !==============================================================
   real(dp),dimension(1:nvector)::skx,ckx,sky,cky,skz,ckz,imtrigterms
   integer::i,j,k
-  integer:: rand_stir_seed
-  rand_stir_seed = 0
 
   if( .not. stir_initialized) then
-     if(verbose) write(*,*)'Initializing Stir k-space'
+     if(myid==1) write(*,*)'Initializing Stir k-space field'
      call stir_update_k_space(stir_seed) !stir_seed is provided by stir_parameters or user.
-  else
-     rand_stir_seed = rand() * 1d6 ! rand() returns a value between 0 - 1 
-                                   ! Thus, convert to user magnitude of 1D5
-     rand_stir_seed = INT(rand_stir_seed) ! Convert to int and make mag same as user supplied.
-     if(verbose) write(*,*) 'New random seed for Stir K-space', rand_stir_seed
-     call stir_update_k_space(rand_stir_seed)
   end if
-  if(verbose) write(*,*) 'Stir Seed, Rand_seed: ', stir_seed, rand_stir_seed
+
   acc = 0D0
   do i = 1,nstir  
      do j=1,nstir

@@ -18,7 +18,7 @@ subroutine read_stir_params(nml_ok)
   nml_ok=.true.
 
   ! ------------ DWM
-  ! COmpute time step to modify the stirring acc field.
+  ! Compute time step to modify the stirring acc field.
   !---------------
   do i=1,noutput
      stir_timescale(i)=dble(i)*stir_delta_t

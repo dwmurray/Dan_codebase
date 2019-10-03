@@ -170,6 +170,7 @@ recursive subroutine amr_step(ilevel,icount)
         ! proceeds to create a new accl field
         ! N.B. Stirring assumes it is the last 3 passive
         ! scalars and replaces those values in uold.
+        !if(myid==1) write(*,*) 'amr_step: calling stirUpdate'
         call stir_update
      end if
 

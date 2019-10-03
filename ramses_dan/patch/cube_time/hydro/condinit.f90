@@ -5,6 +5,7 @@
 subroutine condinit(x,u,dx,nn)
   use amr_parameters
   use hydro_parameters
+  use stir_parameters
   implicit none
   integer ::nn                            ! Number of cells
   real(dp)::dx                            ! Cell size
@@ -33,7 +34,11 @@ subroutine condinit(x,u,dx,nn)
   real(dp),dimension(1:ndim):: box_center, xFromCenter
 
 
+
   ! Call built-in initial condition generator
+  ! DWM 05/19 N.B. region_condinit (init_flow_fine.f90)
+  ! loops through nvar, so if you add additional vars beyond RS
+  ! modifications they will be set to 0.0
   call region_condinit(x,q,dx,nn)
 
   ! Add here, if you wish, some user-defined initial conditions
@@ -50,6 +55,7 @@ subroutine condinit(x,u,dx,nn)
   v1=0d0
   p1=rho1*T2_star/(scale_v*scale_v)
   do i=1,nn
+     if(myid==1)write(*,*) 'Condinit x(i,:): ', x(i,:)
      q(i,id)=rho1
 
      q(i,iu)= 0d0
@@ -62,24 +68,7 @@ subroutine condinit(x,u,dx,nn)
      q(i,iax)=acc(i,1)
      q(i,iay)=acc(i,2)
      q(i,iaz)=acc(i,3)
-     !DWM will begin by attempting a polluted cube of size 0.1*boxlen
-     !Centered in the middle of the box.
-     box_center(:)=0.5*boxlen !boxlen=1.0 (code units) !x is in cm
-     xFromCenter(:) = abs(x(i,:)-box_center(:)) !just care about distance from center.
-     if( xFromCenter(1) .le. 0.1*boxlen) then
-        if( xFromCenter(2) .le. 0.1*boxlen) then
-           if( xFromCenter(3) .le. 0.1*boxlen) then
-              !make polluted fraction be 0.9 to check.
-              q(i,7)=0.1 ! looking for ivar=pristine (ivar=7)
-           end if
-        end if
-     end if
-     !DWM TODO Test Zone for a sphere next.
   end do
-!  if(verbose)write(*,*) 'Printing after add stir q(1,i):'
-!  if(verbose)write(*,*) q(1,1),q(1,2),q(1,3),q(1,4),q(1,5),q(1,6),q(1,7),q(1,8),q(1,9),q(1,10),q(1,11),q(1,12)
-
-
   ! Convert primitive to conservative variables
   ! density -> density
   u(1:nn,1)=q(1:nn,1)
@@ -120,9 +109,6 @@ subroutine condinit(x,u,dx,nn)
      ! have to account for this.
      ! region_condinit init's the q's to 0.0 except for 
      ! iprist, which gets 1.0
-     ! DWM 05/19 N.B. region_condinit (init_flow_fine.f90)
-     ! loops through nvar, so if you add additional vars beyond RS
-     ! modifications they will be set to 0.0
      u(1:nn,ivar)=q(1:nn,1)*q(1:nn,ivar)
   end do
 #endif

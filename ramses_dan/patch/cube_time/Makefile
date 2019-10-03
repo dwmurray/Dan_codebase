@@ -113,7 +113,7 @@ HYDROOBJ = init_hydro.o init_flow_fine.o write_screen.o output_hydro.o courant_f
            uplmde.o umuscl.o interpol_hydro.o godunov_utils.o condinit.o hydro_flag.o hydro_boundary.o \
            boundana.o read_hydro_params.o synchro_hydro_fine.o
 # Stir Objects !DWM 05/2019
-STIROBJ = stir_parameters.o read_stir_params.o stir_update.o # !DWM added stirupdate
+STIROBJ = stir_parameters.o read_stir_params.o stir_update.o polluted_shapes.o #!DWM added stirupdate
 # All objects
 AMRLIB = $(AMROBJ) $(STIROBJ) $(HYDROOBJ) $(PMOBJ) $(POISSONOBJ)
 # ATON objects
@@ -123,7 +123,7 @@ ATON_OBJ = observe.o init_radiation.o rad_init.o rad_boundary.o rad_stars.o rad_
 ramses:	$(MODOBJ) $(AMRLIB) ramses.o
 	$(F90) $(MODOBJ) $(AMRLIB) ramses.o -o $(EXEC)$(NDIM)d $(LIBS)
 	rm write_makefile.f90
-	rm write_patch.f90
+#	rm write_patch.f90
 ramses_aton: $(MODOBJ) $(ATON_MODOBJ) $(AMRLIB) $(ATON_OBJ) ramses.o
 	$(F90) $(MODOBJ) $(ATON_MODOBJ) $(AMRLIB) $(ATON_OBJ) ramses.o -o $(EXEC)$(NDIM)d $(LIBS) $(LIBCUDA)
 	rm write_makefile.f90

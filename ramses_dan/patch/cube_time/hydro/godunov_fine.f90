@@ -140,12 +140,10 @@ subroutine set_uold(ilevel)
 
   ! DWM 05/2019 Added stirring
   ! Add turbulent stirring terms
+  if(myid==1) write(*,*) 'God_fine, Stir flag:', stir
   if(stir)then
-     ! DWM call to update the stir accel field randomly every coarse call
-     ! Then call to add the source terms on that ilevel 
-     !if(ilevel==levelmin) then
-        ! call update_stir_k_field
-     !end if
+     if(myid==1) write(*,*) 'God_fine, Adding stir source terms'
+     ! Call to add the source terms on that ilevel 
      call add_stir_source_terms(ilevel)
   end if
 
