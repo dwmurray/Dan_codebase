@@ -23,7 +23,8 @@ subroutine polluted_shapes
   !DWM will begin by attempting a polluted cube of size 0.1*boxlen
   !Centered in the middle of the box.
 
-  do ilevel=1,nlevelmax
+  do ilevel=nlevelmax,1,-1
+     if(ilevel<levelmin) return
      ! Mesh size at level ilevel in coarse cell units
      dx=0.5D0**ilevel
 

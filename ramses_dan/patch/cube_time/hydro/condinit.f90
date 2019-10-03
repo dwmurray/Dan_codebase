@@ -55,7 +55,7 @@ subroutine condinit(x,u,dx,nn)
   v1=0d0
   p1=rho1*T2_star/(scale_v*scale_v)
   do i=1,nn
-     if(myid==1)write(*,*) 'Condinit x(i,:): ', x(i,:)
+     !if(myid==1)write(*,*) 'Condinit x(i,:): ', x(i,:)
      q(i,id)=rho1
 
      q(i,iu)= 0d0
